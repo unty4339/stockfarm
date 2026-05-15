@@ -9,10 +9,6 @@ public class TimeDisplayUI : MonoBehaviour
 {
     private TextMeshProUGUI _timeText;
     private TextMeshProUGUI _fundsText;
-    private Button _pauseButton;
-    private Button _speed1Button;
-    private Button _speed2Button;
-    private Button _speed3Button;
 
     private void Start()
     {
@@ -42,25 +38,24 @@ public class TimeDisplayUI : MonoBehaviour
 
     private void BuildUI()
     {
-        var bg = CreatePanel(transform, "TimePanel", new Vector2(220, 80),
-            new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-10, 10));
-        var bgImg = bg.AddComponent<Image>();
-        bgImg.color = new Color(0, 0, 0, 0.6f);
+        var bg = new GameObject("TimePanel");
+        bg.transform.SetParent(transform, false);
+        var bgRt = bg.AddComponent<RectTransform>();
+        bgRt.anchorMin = new Vector2(1f, 0f);
+        bgRt.anchorMax = new Vector2(1f, 0f);
+        bgRt.sizeDelta = new Vector2(220, 80);
+        bgRt.anchoredPosition = new Vector2(-10, 10);
+        bg.AddComponent<Image>().color = new Color(0, 0, 0, 0.6f);
 
-        _timeText = CreateText(bg.transform, "TimeText", "Day 1 | Slot 8",
-            new Vector2(0, 20), 14);
-        _fundsText = CreateText(bg.transform, "FundsText", "資金: 2000",
-            new Vector2(0, -5), 14);
+        _timeText = UIHelper.CreateText(bg.transform, "TimeText", "Day 1 | 04:00",
+            new Vector2(0, 22), 13, Color.white);
+        _fundsText = UIHelper.CreateText(bg.transform, "FundsText", "資金: 2000",
+            new Vector2(0, 2), 13, Color.white);
 
-        CreateSpeedButtons(bg.transform);
-    }
-
-    private void CreateSpeedButtons(Transform parent)
-    {
-        _pauseButton = CreateButton(parent, "PauseBtn", "||", new Vector2(-80, -30), () => OnPausePressed());
-        _speed1Button = CreateButton(parent, "Speed1Btn", "×1", new Vector2(-40, -30), () => OnSpeedChanged(1f));
-        _speed2Button = CreateButton(parent, "Speed2Btn", "×2", new Vector2(0, -30), () => OnSpeedChanged(2f));
-        _speed3Button = CreateButton(parent, "Speed3Btn", "×3", new Vector2(40, -30), () => OnSpeedChanged(3f));
+        UIHelper.CreateButton(bg.transform, "||", new Vector2(-80, -22), 36, 20, OnPausePressed);
+        UIHelper.CreateButton(bg.transform, "×1", new Vector2(-40, -22), 36, 20, () => OnSpeedChanged(1f));
+        UIHelper.CreateButton(bg.transform, "×2", new Vector2(0, -22), 36, 20, () => OnSpeedChanged(2f));
+        UIHelper.CreateButton(bg.transform, "×3", new Vector2(40, -22), 36, 20, () => OnSpeedChanged(3f));
     }
 
     private void OnTick(int tick)
@@ -116,62 +111,5 @@ public class TimeDisplayUI : MonoBehaviour
     {
         int hour = (slot + 4) % 24;
         return $"{hour:00}:00";
-    }
-
-    // UIビルダーヘルパー
-    private static GameObject CreatePanel(Transform parent, string name, Vector2 size,
-        Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.sizeDelta = size;
-        rt.anchoredPosition = anchoredPos;
-        return go;
-    }
-
-    private static TextMeshProUGUI CreateText(Transform parent, string name, string text, Vector2 pos, float size)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = new Vector2(200, 20);
-        var tmp = go.AddComponent<TextMeshProUGUI>();
-        tmp.text = text;
-        tmp.fontSize = size;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-        return tmp;
-    }
-
-    private static Button CreateButton(Transform parent, string name, string label, Vector2 pos, UnityEngine.Events.UnityAction onClick)
-    {
-        var go = new GameObject(name);
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = new Vector2(36, 20);
-        var img = go.AddComponent<Image>();
-        img.color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-        var btn = go.AddComponent<Button>();
-        btn.targetGraphic = img;
-        btn.onClick.AddListener(onClick);
-
-        var textGo = new GameObject("Label");
-        textGo.transform.SetParent(go.transform, false);
-        var textRt = textGo.AddComponent<RectTransform>();
-        textRt.anchorMin = Vector2.zero;
-        textRt.anchorMax = Vector2.one;
-        textRt.offsetMin = Vector2.zero;
-        textRt.offsetMax = Vector2.zero;
-        var tmp = textGo.AddComponent<TextMeshProUGUI>();
-        tmp.text = label;
-        tmp.fontSize = 10;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-        return btn;
     }
 }

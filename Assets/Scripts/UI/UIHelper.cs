@@ -21,6 +21,17 @@ public static class UIHelper
     }
 
     /// <summary>
+    /// 既存の TextMeshProUGUI にキャッシュ済みフォントを適用する
+    /// UIHelper を経由せず直接生成した TMP コンポーネントに使用する
+    /// </summary>
+    /// <param name="tmp">フォントを適用する TextMeshProUGUI</param>
+    public static void ApplyFont(TextMeshProUGUI tmp)
+    {
+        EnsureFont();
+        if (_font != null) tmp.font = _font;
+    }
+
+    /// <summary>
     /// TextMeshProUGUI コンポーネント付きの子 GameObject を生成する
     /// </summary>
     /// <param name="parent">親 Transform</param>

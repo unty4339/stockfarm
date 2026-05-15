@@ -84,28 +84,6 @@ public class MenuBarUI : MonoBehaviour
 
     private void CreateMenuButton(Transform parent, string label, Vector2 pos, UnityEngine.Events.UnityAction onClick)
     {
-        var go = new GameObject(label + "Btn");
-        go.transform.SetParent(parent, false);
-        var rt = go.AddComponent<RectTransform>();
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = new Vector2(100, 40);
-        var img = go.AddComponent<Image>();
-        img.color = new Color(0.25f, 0.25f, 0.25f, 1f);
-        var btn = go.AddComponent<Button>();
-        btn.targetGraphic = img;
-        btn.onClick.AddListener(onClick);
-
-        var textGo = new GameObject("Text");
-        textGo.transform.SetParent(go.transform, false);
-        var textRt = textGo.AddComponent<RectTransform>();
-        textRt.anchorMin = Vector2.zero;
-        textRt.anchorMax = Vector2.one;
-        textRt.offsetMin = Vector2.zero;
-        textRt.offsetMax = Vector2.zero;
-        var tmp = textGo.AddComponent<TMPro.TextMeshProUGUI>();
-        tmp.text = label;
-        tmp.fontSize = 13;
-        tmp.alignment = TMPro.TextAlignmentOptions.Center;
-        tmp.color = Color.white;
+        UIHelper.CreateButton(parent, label, pos, 100, 40, onClick);
     }
 }

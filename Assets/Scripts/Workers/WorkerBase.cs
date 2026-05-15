@@ -31,6 +31,8 @@ public abstract class WorkerBase : MonoBehaviour
 
     private int _hungryTickCount;
     private SpriteRenderer _spriteRenderer;
+    private Vector3 _visualPosition;
+    private bool _visualInitialized;
 
     /// <summary>ワーカーの表示色</summary>
     protected abstract Color WorkerColor { get; }
@@ -65,7 +67,15 @@ public abstract class WorkerBase : MonoBehaviour
 
     private void Update()
     {
-        transform.position = new Vector3(GridPosition.x, GridPosition.y, -0.1f);
+        var targetPos = new Vector3(GridPosition.x, GridPosition.y, -0.1f);
+        if (!_visualInitialized)
+        {
+            _visualPosition = targetPos;
+            _visualInitialized = true;
+        }
+        float timeScale = GameTimeManager.Instance != null ? GameTimeManager.Instance.TimeScale : 1f;
+        _visualPosition = Vector3.MoveTowards(_visualPosition, targetPos, timeScale * Time.deltaTime);
+        transform.position = _visualPosition;
     }
 
     private void OnTick(int tick)

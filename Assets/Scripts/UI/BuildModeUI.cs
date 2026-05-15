@@ -43,6 +43,7 @@ public class BuildModeUI : MonoBehaviour
         _modeLabel.fontSize = 14;
         _modeLabel.alignment = TextAlignmentOptions.Center;
         _modeLabel.color = Color.yellow;
+        UIHelper.ApplyFont(_modeLabel);
     }
 
     private void Update()
