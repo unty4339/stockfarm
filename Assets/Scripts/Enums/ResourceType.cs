@@ -13,4 +13,6 @@ public enum ResourceType
     BottledMilk,
     /// <summary>牛乳（液体）</summary>
     Milk,
+    /// <summary>小麦（固体・スタック可能）</summary>
+    Wheat,
 }

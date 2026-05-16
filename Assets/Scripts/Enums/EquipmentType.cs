@@ -38,8 +38,14 @@ public enum EquipmentType
     BreedingFacility,
     /// <summary>運搬用パレット</summary>
     TransportPallet,
-    /// <summary>牛用ベッド</summary>
-    CowBed,
+    /// <summary>藁のベッド</summary>
+    StrawBed,
+    /// <summary>普通のベッド</summary>
+    NormalBed,
+    /// <summary>贅沢ベッド</summary>
+    LuxuryBed,
+    /// <summary>キングベッド</summary>
+    KingBed,
     /// <summary>資源置き場（売却ポイント）</summary>
     SellPoint,
 }

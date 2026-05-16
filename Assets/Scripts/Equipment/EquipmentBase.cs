@@ -21,6 +21,12 @@ public abstract class EquipmentBase : MonoBehaviour
     public abstract MoodType AffectedMoodType { get; }
     /// <summary>現在設置済みかどうか</summary>
     public bool IsPlaced { get; private set; }
+    /// <summary>配置時の回転角度（0/90/180/270度）</summary>
+    public int PlacementRotation { get; private set; }
+    /// <summary>回転を考慮した実効サイズ（90°/270°時はSize.x/yを入れ替える）</summary>
+    public Vector2Int EffectiveSize => (PlacementRotation == 90 || PlacementRotation == 270)
+        ? new Vector2Int(Size.y, Size.x)
+        : Size;
 
     /// <summary>設備の表示色</summary>
     protected abstract Color EquipmentColor { get; }
@@ -34,8 +40,10 @@ public abstract class EquipmentBase : MonoBehaviour
     /// 指定座標に設置する（BuildingManagerから呼ばれる）
     /// </summary>
     /// <param name="position">設置グリッド座標</param>
-    public virtual void Place(Vector2Int position)
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
+    public virtual void Place(Vector2Int position, int rotation = 0)
     {
+        PlacementRotation = rotation;
         GridPosition = position;
         IsPlaced = true;
 
@@ -45,9 +53,10 @@ public abstract class EquipmentBase : MonoBehaviour
         _spriteRenderer.sprite = SpriteHelper.CreateColorSprite(EquipmentColor);
         _spriteRenderer.sortingOrder = 1;
 
-        var worldPos = GridHelper.GridToWorld(position, Size);
+        var effSize = EffectiveSize;
+        var worldPos = GridHelper.GridToWorld(position, effSize);
         transform.position = new Vector3(worldPos.x, worldPos.y, -0.05f);
-        transform.localScale = new Vector3(Size.x * 0.9f, Size.y * 0.9f, 1f);
+        transform.localScale = new Vector3(effSize.x * 0.9f, effSize.y * 0.9f, 1f);
 
         if (MapManager.Instance != null)
         {
@@ -83,15 +92,16 @@ public abstract class EquipmentBase : MonoBehaviour
     }
 
     /// <summary>
-    /// 設備が占有しているグリッド座標の一覧を返す
+    /// 設備が占有しているグリッド座標の一覧を返す（回転を考慮）
     /// </summary>
     /// <returns>占有座標リスト</returns>
     public List<Vector2Int> GetOccupiedPositions()
     {
         var positions = new List<Vector2Int>();
-        for (int x = 0; x < Size.x; x++)
+        var effSize = EffectiveSize;
+        for (int x = 0; x < effSize.x; x++)
         {
-            for (int y = 0; y < Size.y; y++)
+            for (int y = 0; y < effSize.y; y++)
             {
                 positions.Add(GridPosition + new Vector2Int(x, y));
             }

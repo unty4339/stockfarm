@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,8 +8,30 @@ public class GameBootstrapper : MonoBehaviour
 {
     private void Start()
     {
+        SetupCropManager();
         PlaceInitialEquipments();
         SpawnInitialWorkers();
+        SetupAgricultureZone();
+    }
+
+    /// <summary>
+    /// CropManagerをシーンに生成する
+    /// </summary>
+    private void SetupCropManager()
+    {
+        new GameObject("CropManager").AddComponent<CropManager>();
+    }
+
+    /// <summary>
+    /// 牧場主の初期位置付近に農業ゾーンを作成する
+    /// </summary>
+    private void SetupAgricultureZone()
+    {
+        var positions = new List<Vector2Int>();
+        for (int x = 17; x <= 20; x++)
+            for (int y = 13; y <= 16; y++)
+                positions.Add(new Vector2Int(x, y));
+        ZoneManager.Instance.CreateZone(ZoneType.Agriculture, positions);
     }
 
     /// <summary>
@@ -20,8 +43,8 @@ public class GameBootstrapper : MonoBehaviour
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.FeedingTrough, new Vector2Int(7, 5));
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.Chest, new Vector2Int(5, 7));
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.Chest, new Vector2Int(7, 7));
-        BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.CowBed, new Vector2Int(10, 5));
-        BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.CowBed, new Vector2Int(10, 7));
+        BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.NormalBed, new Vector2Int(10, 5));
+        BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.NormalBed, new Vector2Int(10, 7));
 
         RoomManager.Instance.RefreshRooms();
     }

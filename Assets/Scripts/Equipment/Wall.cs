@@ -16,9 +16,10 @@ public class Wall : EquipmentBase
     /// 配置時にタイル種別をWallに変更する
     /// </summary>
     /// <param name="position">設置グリッド座標</param>
-    public override void Place(Vector2Int position)
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
+    public override void Place(Vector2Int position, int rotation = 0)
     {
-        base.Place(position);
+        base.Place(position, rotation);
         SetTileType(position, TileType.Wall);
     }
 

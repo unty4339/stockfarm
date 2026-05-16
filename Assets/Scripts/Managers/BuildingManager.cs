@@ -43,8 +43,9 @@ public class BuildingManager : MonoBehaviour
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">設置グリッド座標</param>
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
     /// <returns>設置成功でtrue</returns>
-    public bool PlaceEquipment(EquipmentType type, Vector2Int position)
+    public bool PlaceEquipment(EquipmentType type, Vector2Int position, int rotation = 0)
     {
         var prefab = CreateEquipmentObject(type);
         if (prefab == null) return false;
@@ -55,7 +56,7 @@ public class BuildingManager : MonoBehaviour
             return false;
         }
 
-        prefab.Place(position);
+        prefab.Place(position, rotation);
         _allEquipments.Add(prefab);
         return true;
     }
@@ -65,12 +66,13 @@ public class BuildingManager : MonoBehaviour
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">設置グリッド座標</param>
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
     /// <returns>設置した設備</returns>
-    public EquipmentBase PlaceEquipmentFree(EquipmentType type, Vector2Int position)
+    public EquipmentBase PlaceEquipmentFree(EquipmentType type, Vector2Int position, int rotation = 0)
     {
         var eq = CreateEquipmentObject(type);
         if (eq == null) return null;
-        eq.Place(position);
+        eq.Place(position, rotation);
         _allEquipments.Add(eq);
         return eq;
     }
@@ -132,8 +134,34 @@ public class BuildingManager : MonoBehaviour
             EquipmentType.BreedingFacility => new Vector2Int(2, 2),
             EquipmentType.CheesePress => new Vector2Int(2, 1),
             EquipmentType.SellPoint => new Vector2Int(2, 1),
+            EquipmentType.StrawBed or EquipmentType.NormalBed => new Vector2Int(1, 2),
+            EquipmentType.LuxuryBed => new Vector2Int(2, 2),
+            EquipmentType.KingBed => new Vector2Int(3, 3),
             _ => Vector2Int.one,
         };
+    }
+
+    /// <summary>
+    /// 回転を適用したGridサイズを返す（90°/270°時はx/yを入れ替える）
+    /// </summary>
+    /// <param name="type">設備種別</param>
+    /// <param name="rotation">回転角度（0/90/180/270度）</param>
+    /// <returns>回転後の占有グリッドサイズ</returns>
+    public static Vector2Int GetEffectiveSize(EquipmentType type, int rotation)
+    {
+        var size = GetEquipmentSize(type);
+        return (rotation == 90 || rotation == 270) ? new Vector2Int(size.y, size.x) : size;
+    }
+
+    /// <summary>
+    /// 設備が回転に対応しているかを返す（非正方形サイズの設備のみ対応）
+    /// </summary>
+    /// <param name="type">設備種別</param>
+    /// <returns>回転対応であればtrue</returns>
+    public static bool SupportsRotation(EquipmentType type)
+    {
+        var size = GetEquipmentSize(type);
+        return size.x != size.y;
     }
 
     private EquipmentBase CreateEquipmentObject(EquipmentType type)
@@ -156,7 +184,10 @@ public class BuildingManager : MonoBehaviour
             EquipmentType.AutoBrush => go.AddComponent<AutoBrush>(),
             EquipmentType.BreedingFacility => go.AddComponent<BreedingFacility>(),
             EquipmentType.TransportPallet => go.AddComponent<TransportPallet>(),
-            EquipmentType.CowBed => go.AddComponent<CowBed>(),
+            EquipmentType.StrawBed => go.AddComponent<StrawBed>(),
+            EquipmentType.NormalBed => go.AddComponent<NormalBed>(),
+            EquipmentType.LuxuryBed => go.AddComponent<LuxuryBed>(),
+            EquipmentType.KingBed => go.AddComponent<KingBed>(),
             EquipmentType.SellPoint => go.AddComponent<SellPoint>(),
             _ => null,
         };

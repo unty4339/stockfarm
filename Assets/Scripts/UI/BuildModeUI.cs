@@ -14,6 +14,8 @@ public class BuildModeUI : MonoBehaviour
     public bool IsInBuildMode { get; private set; }
     /// <summary>配置中の設備種別</summary>
     public EquipmentType CurrentType { get; private set; }
+    /// <summary>現在の配置回転角度（0/90/180/270度）</summary>
+    public int CurrentRotation { get; private set; }
 
     private TextMeshProUGUI _modeLabel;
     private Camera _mainCamera;
@@ -53,17 +55,35 @@ public class BuildModeUI : MonoBehaviour
         var mouse = Mouse.current;
         if (mouse == null) return;
 
+        if (mouse.rightButton.wasPressedThisFrame)
+        {
+            ExitBuildMode();
+            return;
+        }
+
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
+        {
+            if (keyboard.rKey.wasPressedThisFrame && BuildingManager.SupportsRotation(CurrentType))
+            {
+                CurrentRotation = (CurrentRotation + 90) % 360;
+                UpdateModeLabel();
+            }
+            if (keyboard.escapeKey.wasPressedThisFrame)
+            {
+                ExitBuildMode();
+                return;
+            }
+        }
+
         var screenPos = mouse.position.ReadValue();
         var worldPos = _mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
         var gridPos = GridHelper.WorldToGrid(worldPos);
 
-        GhostPlacer.ShowGhost(CurrentType, gridPos);
+        GhostPlacer.ShowGhost(CurrentType, gridPos, CurrentRotation);
 
-        if (mouse.leftButton.wasPressedThisFrame)
+        if (mouse.leftButton.wasPressedThisFrame && !UIHelper.IsPointerOverUI())
             OnGridClicked(gridPos);
-
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-            ExitBuildMode();
     }
 
     /// <summary>
@@ -74,7 +94,8 @@ public class BuildModeUI : MonoBehaviour
     {
         IsInBuildMode = true;
         CurrentType = type;
-        _modeLabel.text = $"配置中: {type}  [ESC]でキャンセル";
+        CurrentRotation = 0;
+        UpdateModeLabel();
     }
 
     /// <summary>
@@ -93,6 +114,14 @@ public class BuildModeUI : MonoBehaviour
     /// <param name="position">クリックしたグリッド座標</param>
     public void OnGridClicked(Vector2Int position)
     {
-        BuildingManager.Instance?.PlaceEquipment(CurrentType, position);
+        BuildingManager.Instance?.PlaceEquipment(CurrentType, position, CurrentRotation);
+    }
+
+    private void UpdateModeLabel()
+    {
+        if (BuildingManager.SupportsRotation(CurrentType))
+            _modeLabel.text = $"配置中: {CurrentType}  回転: {CurrentRotation}°  [R]で回転  [ESC]でキャンセル";
+        else
+            _modeLabel.text = $"配置中: {CurrentType}  [ESC]でキャンセル";
     }
 }

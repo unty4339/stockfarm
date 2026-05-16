@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -15,8 +14,10 @@ public class SelectionInputHandler : MonoBehaviour
     private const float WorkerPickRadius = 0.5f;
 
     private BuildModeUI _buildModeUI;
+    private ZonePlacementModeUI _zonePlacementModeUI;
     private WorkerPopupUI _workerPopupUI;
     private FacilityPopupUI _facilityPopupUI;
+    private ZonePopupUI _zonePopupUI;
     private WorkerSelectionUI _workerSelectionUI;
     private Camera _mainCamera;
 
@@ -27,8 +28,10 @@ public class SelectionInputHandler : MonoBehaviour
     private void Start()
     {
         _buildModeUI = FindFirstObjectByType<BuildModeUI>();
+        _zonePlacementModeUI = FindFirstObjectByType<ZonePlacementModeUI>();
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
         _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
+        _zonePopupUI = FindFirstObjectByType<ZonePopupUI>();
         _workerSelectionUI = FindFirstObjectByType<WorkerSelectionUI>();
         _mainCamera = Camera.main;
     }
@@ -39,6 +42,7 @@ public class SelectionInputHandler : MonoBehaviour
         if (mouse == null) return;
 
         if (_buildModeUI != null && _buildModeUI.IsInBuildMode) return;
+        if (_zonePlacementModeUI != null && _zonePlacementModeUI.IsInZonePlacementMode) return;
 
         if (mouse.leftButton.wasPressedThisFrame)
             OnMouseDown(mouse.position.ReadValue());
@@ -56,7 +60,7 @@ public class SelectionInputHandler : MonoBehaviour
 
     private void OnMouseDown(Vector2 screenPos)
     {
-        if (IsPointerOverUI()) return;
+        if (UIHelper.IsPointerOverUI()) return;
 
         _mouseDownPos = screenPos;
         _mouseDownActive = true;
@@ -122,13 +126,28 @@ public class SelectionInputHandler : MonoBehaviour
         if (equipment != null)
         {
             _facilityPopupUI?.Show(equipment);
+            _zonePopupUI?.Hide();
+            return;
         }
-        else
+
+        var gridPos = GridHelper.WorldToGrid(worldPos);
+        if (MapManager.Instance != null && MapManager.Instance.IsValidPosition(gridPos))
         {
-            _workerPopupUI?.Hide();
-            _facilityPopupUI?.Hide();
-            _workerSelectionUI?.HideIconBar();
+            var zone = MapManager.Instance.GetTile(gridPos).Zone;
+            if (zone != null)
+            {
+                _zonePopupUI?.Show(zone);
+                _workerPopupUI?.Hide();
+                _facilityPopupUI?.Hide();
+                _workerSelectionUI?.HideIconBar();
+                return;
+            }
         }
+
+        _workerPopupUI?.Hide();
+        _facilityPopupUI?.Hide();
+        _zonePopupUI?.Hide();
+        _workerSelectionUI?.HideIconBar();
     }
 
     private WorkerBase FindNearestWorker(Vector3 worldPos)
@@ -208,19 +227,5 @@ public class SelectionInputHandler : MonoBehaviour
         }
 
         return result;
-    }
-
-    private bool IsPointerOverUI()
-    {
-        var mouse = Mouse.current;
-        if (mouse == null || EventSystem.current == null) return false;
-
-        var eventData = new PointerEventData(EventSystem.current)
-        {
-            position = mouse.position.ReadValue()
-        };
-        var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-        return results.Count > 0;
     }
 }

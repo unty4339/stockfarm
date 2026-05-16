@@ -13,6 +13,12 @@ public class GridTile
     public EquipmentBase PlacedEquipment { get; set; }
     /// <summary>廃棄物マーカー（nullなら清潔）</summary>
     public WasteMarker WasteMarker { get; set; }
+    /// <summary>タイルに置かれているアイテム（nullなら空き）</summary>
+    public TileItem PlacedItem { get; set; }
+    /// <summary>タイルが属するゾーン（nullなら未設定）</summary>
+    public ZoneData Zone { get; set; }
+    /// <summary>タイルに植えられている作物データ（nullなら未植付け）</summary>
+    public CropData Crop { get; set; }
 
     /// <summary>
     /// コンストラクタ

@@ -12,6 +12,8 @@ public class MenuBarUI : MonoBehaviour
     public PriorityMenuUI PriorityMenuUI { get; private set; }
     /// <summary>施設種別メニューの参照</summary>
     public FacilityMenuUI FacilityMenuUI { get; private set; }
+    /// <summary>ゾーン設定メニューの参照</summary>
+    public ZoneMenuUI ZoneMenuUI { get; private set; }
 
     private void Start()
     {
@@ -22,13 +24,17 @@ public class MenuBarUI : MonoBehaviour
     {
         var bar = CreateBarPanel();
 
-        CreateMenuButton(bar.transform, "指令", new Vector2(-120, 0), ShowCommandMenu);
-        CreateMenuButton(bar.transform, "優先順位", new Vector2(0, 0), ShowPriorityMenu);
-        CreateMenuButton(bar.transform, "施設", new Vector2(120, 0), ShowFacilityMenu);
+        CreateMenuButton(bar.transform, "指令", new Vector2(-180, 0), ShowCommandMenu);
+        CreateMenuButton(bar.transform, "優先順位", new Vector2(-60, 0), ShowPriorityMenu);
+        CreateMenuButton(bar.transform, "施設", new Vector2(60, 0), ShowFacilityMenu);
+        CreateMenuButton(bar.transform, "ゾーン設定", new Vector2(180, 0), ShowZoneMenu);
 
         CommandMenuUI = gameObject.AddComponent<CommandMenuUI>();
         PriorityMenuUI = gameObject.AddComponent<PriorityMenuUI>();
         FacilityMenuUI = gameObject.AddComponent<FacilityMenuUI>();
+        ZoneMenuUI = gameObject.AddComponent<ZoneMenuUI>();
+        gameObject.AddComponent<ZonePlacementModeUI>();
+        gameObject.AddComponent<ZonePopupUI>();
     }
 
     /// <summary>
@@ -59,6 +65,15 @@ public class MenuBarUI : MonoBehaviour
     }
 
     /// <summary>
+    /// ゾーン設定メニューを表示する（他メニューは非表示にする）
+    /// </summary>
+    public void ShowZoneMenu()
+    {
+        HideAll();
+        ZoneMenuUI?.Show();
+    }
+
+    /// <summary>
     /// 全サブメニューを非表示にする
     /// </summary>
     public void HideAll()
@@ -66,6 +81,7 @@ public class MenuBarUI : MonoBehaviour
         CommandMenuUI?.Hide();
         PriorityMenuUI?.Hide();
         FacilityMenuUI?.Hide();
+        ZoneMenuUI?.Hide();
     }
 
     private GameObject CreateBarPanel()
@@ -75,7 +91,7 @@ public class MenuBarUI : MonoBehaviour
         var rt = go.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0.5f, 0f);
         rt.anchorMax = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(400, 50);
+        rt.sizeDelta = new Vector2(520, 50);
         rt.anchoredPosition = new Vector2(0, 30);
         var img = go.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.7f);

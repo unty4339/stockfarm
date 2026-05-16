@@ -33,6 +33,8 @@ public class AIDecisionMaker
         TaskPriorities[typeof(CareTask)] = 5;
         TaskPriorities[typeof(ProcessingAssistTask)] = 5;
         TaskPriorities[typeof(TransportTask)] = 5;
+        TaskPriorities[typeof(HarvestTask)] = 4;
+        TaskPriorities[typeof(PlantTask)] = 5;
         TaskPriorities[typeof(CleanTask)] = 6;
         TaskPriorities[typeof(IdleWalkTask)] = 7;
     }
@@ -159,6 +161,23 @@ public class AIDecisionMaker
 
     private AITaskBase TryCreateWorkTask()
     {
+        if (Owner is FarmerWorker)
+        {
+            var harvestTile = CropManager.Instance?.FindNearestHarvestReadyTile(Owner.GridPosition);
+            if (harvestTile != null)
+            {
+                var t = new HarvestTask(Owner, harvestTile);
+                if (t.CanExecute()) return t;
+            }
+
+            var plantTile = CropManager.Instance?.FindNearestEmptyAgricultureTile(Owner.GridPosition);
+            if (plantTile != null)
+            {
+                var t = new PlantTask(Owner, plantTile);
+                if (t.CanExecute()) return t;
+            }
+        }
+
         if (Owner is CowWorker cowWorker && cowWorker.MilkAccumulation >= 5f)
         {
             var stand = FindNearest<ManualMilkingStand>();

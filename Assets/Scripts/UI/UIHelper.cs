@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -10,6 +13,24 @@ public static class UIHelper
 {
     private const string FontAddress = "DefaultUIFont.asset";
     private static TMP_FontAsset _font;
+
+    /// <summary>
+    /// 現在のマウス位置が UI 要素上かどうかを EventSystem のレイキャストで判定する
+    /// </summary>
+    /// <returns>UI 上の場合 true</returns>
+    public static bool IsPointerOverUI()
+    {
+        var mouse = Mouse.current;
+        if (mouse == null || EventSystem.current == null) return false;
+
+        var eventData = new PointerEventData(EventSystem.current)
+        {
+            position = mouse.position.ReadValue()
+        };
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results.Count > 0;
+    }
 
     /// <summary>
     /// フォントをキャッシュ済みでなければ AddressableManager 経由で同期ロードする

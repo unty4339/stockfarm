@@ -113,7 +113,9 @@ public abstract class WorkerBase : MonoBehaviour
         if (isSleeping)
         {
             var mood = RoomManager.Instance?.GetMoodAt(GridPosition);
-            float bedCoeff = AssignedBed != null ? 1.5f : 1.0f;
+            float bedCoeff = AssignedBed != null
+                ? AssignedBed.StaminaRecoveryMultiplier
+                : 1.0f;
             float recovery = MoodCalculator.GetStaminaRecoveryRate(BaseStaminaRecovery, bedCoeff, mood?.RestMood ?? 0f);
             UpdateStamina(recovery);
         }

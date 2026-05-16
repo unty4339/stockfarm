@@ -16,7 +16,8 @@ public class GhostPlacer : MonoBehaviour
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">グリッド座標</param>
-    public void ShowGhost(EquipmentType type, Vector2Int position)
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
+    public void ShowGhost(EquipmentType type, Vector2Int position, int rotation = 0)
     {
         if (_ghostObject == null)
         {
@@ -25,11 +26,11 @@ public class GhostPlacer : MonoBehaviour
             _ghostRenderer.sortingOrder = 10;
         }
 
-        bool canPlace = CanPlace(type, position);
+        bool canPlace = CanPlace(type, position, rotation);
         _ghostRenderer.sprite = SpriteHelper.CreateColorSprite(canPlace ? ValidColor : InvalidColor);
         _ghostRenderer.color = canPlace ? ValidColor : InvalidColor;
 
-        var size = BuildingManager.GetEquipmentSize(type);
+        var size = BuildingManager.GetEffectiveSize(type, rotation);
         var worldPos = GridHelper.GridToWorld(position, size);
         _ghostObject.transform.position = new Vector3(worldPos.x, worldPos.y, -0.1f);
         _ghostObject.transform.localScale = new Vector3(size.x, size.y, 1f);
@@ -50,12 +51,13 @@ public class GhostPlacer : MonoBehaviour
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">グリッド座標</param>
+    /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
     /// <returns>配置可能な場合true</returns>
-    public bool CanPlace(EquipmentType type, Vector2Int position)
+    public bool CanPlace(EquipmentType type, Vector2Int position, int rotation = 0)
     {
         if (MapManager.Instance == null) return false;
 
-        var size = BuildingManager.GetEquipmentSize(type);
+        var size = BuildingManager.GetEffectiveSize(type, rotation);
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)

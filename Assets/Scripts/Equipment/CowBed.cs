@@ -1,16 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// 牛用ベッド（牧場主も使用可）。1対1でワーカーに割り当てる
+/// 牛用ベッドの基底クラス（牧場主も使用可）。1対1でワーカーに割り当てる
 /// </summary>
-public class CowBed : EquipmentBase
+public abstract class CowBed : EquipmentBase
 {
-    public override EquipmentType Type => EquipmentType.CowBed;
-    public override Vector2Int Size => Vector2Int.one;
     public override int BuildCost => 200;
     public override int MoodBonus => 20;
     public override MoodType AffectedMoodType => MoodType.Rest;
-    protected override Color EquipmentColor => new Color(0.55f, 0.72f, 0.88f);
+
+    /// <summary>睡眠時のスタミナ回復倍率（例: 0.9 = 90%）</summary>
+    public abstract float StaminaRecoveryMultiplier { get; }
 
     /// <summary>割り当て済みワーカー（nullなら空き）</summary>
     public WorkerBase AssignedWorker { get; private set; }
