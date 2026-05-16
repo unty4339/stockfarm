@@ -9,7 +9,7 @@ public class PlantTask : AITaskBase
     private int _workTicksElapsed;
 
     /// <summary>
-    /// コンストラクタ
+    /// コンストラクタ。対象タイルを植付け予約する
     /// </summary>
     /// <param name="owner">植付けを行うワーカー</param>
     /// <param name="tile">植付け対象のタイル</param>
@@ -19,6 +19,7 @@ public class PlantTask : AITaskBase
         _tile = tile;
         Priority = 5;
         TargetPosition = tile.Position;
+        CropManager.Instance?.TryReservePlanting(tile.Position);
     }
 
     /// <inheritdoc/>
@@ -35,9 +36,19 @@ public class PlantTask : AITaskBase
     {
         _workTicksElapsed++;
         if (_workTicksElapsed >= WorkTicksRequired)
-            CropManager.Instance.RegisterCrop(_tile, CropType.Wheat);
+        {
+            CropManager.Instance?.RegisterCrop(_tile, CropType.Wheat);
+            CropManager.Instance?.ReleasePlanting(_tile.Position);
+        }
     }
 
     /// <inheritdoc/>
     protected override bool IsComplete() => _workTicksElapsed >= WorkTicksRequired;
+
+    /// <inheritdoc/>
+    public override void Interrupt()
+    {
+        CropManager.Instance?.ReleasePlanting(_tile.Position);
+        base.Interrupt();
+    }
 }

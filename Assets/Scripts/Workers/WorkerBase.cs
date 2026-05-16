@@ -50,7 +50,7 @@ public abstract class WorkerBase : MonoBehaviour
 
         _spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         _spriteRenderer.sprite = SpriteHelper.CreateColorSprite(WorkerColor);
-        _spriteRenderer.sortingOrder = 2;
+        _spriteRenderer.sortingOrder = 3;
         transform.localScale = new Vector3(0.7f, 0.7f, 1f);
 
         DecisionMaker = new AIDecisionMaker(this);

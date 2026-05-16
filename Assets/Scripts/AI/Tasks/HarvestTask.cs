@@ -10,7 +10,7 @@ public class HarvestTask : AITaskBase
     private bool _harvested;
 
     /// <summary>
-    /// コンストラクタ
+    /// コンストラクタ。対象タイルを収穫予約する
     /// </summary>
     /// <param name="owner">収穫を行うワーカー</param>
     /// <param name="tile">収穫対象のタイル</param>
@@ -20,6 +20,7 @@ public class HarvestTask : AITaskBase
         _tile = tile;
         Priority = 4;
         TargetPosition = tile.Position;
+        CropManager.Instance?.TryReserveHarvesting(tile.Position);
     }
 
     /// <inheritdoc/>
@@ -36,12 +37,23 @@ public class HarvestTask : AITaskBase
         _workTicksElapsed++;
         if (_workTicksElapsed < WorkTicksRequired) return;
 
-        var drop = CropData.GetHarvestDrop(_tile.Crop.Type);
-        ItemDropService.DropItem(new TileItem(drop.resourceType, drop.count), _tile.Position);
-        CropManager.Instance.RemoveCrop(_tile);
+        if (_tile.Crop != null)
+        {
+            var drop = CropData.GetHarvestDrop(_tile.Crop.Type);
+            ItemDropService.DropItem(new TileItem(drop.resourceType, drop.count), _tile.Position);
+            CropManager.Instance?.RemoveCrop(_tile);
+        }
+        CropManager.Instance?.ReleaseHarvesting(_tile.Position);
         _harvested = true;
     }
 
     /// <inheritdoc/>
     protected override bool IsComplete() => _harvested;
+
+    /// <inheritdoc/>
+    public override void Interrupt()
+    {
+        CropManager.Instance?.ReleaseHarvesting(_tile.Position);
+        base.Interrupt();
+    }
 }

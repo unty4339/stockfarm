@@ -51,6 +51,7 @@ public static class ItemDropService
             if (tile.PlacedItem != null && tile.PlacedItem.Type == item.Type && !tile.PlacedItem.IsStackFull)
             {
                 int remaining = tile.PlacedItem.TryAddStack(item.StackCount);
+                ItemVisualManager.Instance?.Refresh(position);
                 if (remaining > 0)
                 {
                     DropOnEmptyNeighbor(new TileItem(item.Type, remaining), position);
@@ -61,7 +62,7 @@ public static class ItemDropService
             // タイルが空きなら新規配置
             if (IsTileEmpty(tile))
             {
-                tile.PlacedItem = item;
+                AssignPlacedItem(tile, item, position);
                 return;
             }
         }
@@ -70,7 +71,7 @@ public static class ItemDropService
             // 非スタックアイテム: 空きタイルなら配置
             if (IsTileEmpty(tile))
             {
-                tile.PlacedItem = item;
+                AssignPlacedItem(tile, item, position);
                 return;
             }
         }
@@ -94,12 +95,24 @@ public static class ItemDropService
             var tile = mapManager.GetTile(neighborPos);
             if (IsTileEmpty(tile))
             {
-                tile.PlacedItem = item;
+                AssignPlacedItem(tile, item, neighborPos);
                 return;
             }
         }
         // TODO: 隣接8マスが全て埋まっている場合はより広い範囲での探索が必要
         Debug.LogWarning($"ItemDropService: 空きタイルが見つからず、アイテム {item.Type} を破棄しました（起点: {fromPosition}）");
+    }
+
+    /// <summary>
+    /// タイルにアイテムを配置しビジュアルを更新する
+    /// </summary>
+    /// <param name="tile">配置先タイル</param>
+    /// <param name="item">配置するアイテム</param>
+    /// <param name="position">タイル座標</param>
+    private static void AssignPlacedItem(GridTile tile, TileItem item, Vector2Int position)
+    {
+        tile.PlacedItem = item;
+        ItemVisualManager.Instance?.Refresh(position);
     }
 
     /// <summary>

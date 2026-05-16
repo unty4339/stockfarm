@@ -53,6 +53,16 @@ public static class UIHelper
     }
 
     /// <summary>
+    /// 既存の TextMeshPro（ワールド空間）にキャッシュ済みフォントを適用する
+    /// </summary>
+    /// <param name="tmp">フォントを適用する TextMeshPro</param>
+    public static void ApplyFont(TextMeshPro tmp)
+    {
+        EnsureFont();
+        if (_font != null) tmp.font = _font;
+    }
+
+    /// <summary>
     /// TextMeshProUGUI コンポーネント付きの子 GameObject を生成する
     /// </summary>
     /// <param name="parent">親 Transform</param>

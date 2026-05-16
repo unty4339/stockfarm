@@ -18,6 +18,7 @@ public class TimeDisplayUI : MonoBehaviour
         {
             GameTimeManager.Instance.OnTickAdvanced += OnTick;
             GameTimeManager.Instance.OnSlotChanged += OnSlotChanged;
+            UpdateDisplay(GameTimeManager.Instance.CurrentSlot, GameTimeManager.Instance.TimeScale);
         }
 
         if (EconomyManager.Instance != null)
@@ -48,7 +49,7 @@ public class TimeDisplayUI : MonoBehaviour
         bgRt.anchoredPosition = new Vector2(-10, 10);
         bg.AddComponent<Image>().color = new Color(0, 0, 0, 0.6f);
 
-        _timeText = UIHelper.CreateText(bg.transform, "TimeText", "Day 1 | 04:00",
+        _timeText = UIHelper.CreateText(bg.transform, "TimeText", "Day 1 | 10:00",
             new Vector2(0, 22), 13, Color.white);
         _fundsText = UIHelper.CreateText(bg.transform, "FundsText", "資金: 2000",
             new Vector2(0, 2), 13, Color.white);
@@ -108,9 +109,13 @@ public class TimeDisplayUI : MonoBehaviour
         GameTimeManager.Instance?.SetTimeScale(scale);
     }
 
-    private string SlotToTime(int slot)
+    /// <summary>
+    /// スロット番号（0〜23）を時刻文字列に変換する
+    /// </summary>
+    /// <param name="slot">時間スロット</param>
+    /// <returns>HH:00 形式の時刻</returns>
+    private static string SlotToTime(int slot)
     {
-        int hour = (slot + 4) % 24;
-        return $"{hour:00}:00";
+        return $"{slot:00}:00";
     }
 }

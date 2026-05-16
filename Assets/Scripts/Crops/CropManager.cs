@@ -11,10 +11,16 @@ public class CropManager : MonoBehaviour
     public static CropManager Instance { get; private set; }
 
     private readonly List<GridTile> _activeCrops = new();
+    private readonly HashSet<Vector2Int> _plantReserved = new();
+    private readonly HashSet<Vector2Int> _harvestReserved = new();
+    private CropVisualManager _visuals;
 
     private void Awake()
     {
         Instance = this;
+        _visuals = GetComponent<CropVisualManager>();
+        if (_visuals == null)
+            _visuals = gameObject.AddComponent<CropVisualManager>();
     }
 
     private void Start()
@@ -37,6 +43,7 @@ public class CropManager : MonoBehaviour
         foreach (var tile in _activeCrops.ToList())
         {
             tile.Crop?.AdvanceGrowth();
+            _visuals.RefreshGrowth(tile);
         }
     }
 
@@ -50,6 +57,7 @@ public class CropManager : MonoBehaviour
         if (tile == null || tile.Crop != null) return;
         tile.Crop = new CropData(type);
         _activeCrops.Add(tile);
+        _visuals.Show(tile);
     }
 
     /// <summary>
@@ -61,6 +69,7 @@ public class CropManager : MonoBehaviour
         if (tile == null) return;
         tile.Crop = null;
         _activeCrops.Remove(tile);
+        _visuals.Hide(tile.Position);
     }
 
     /// <summary>
@@ -82,7 +91,7 @@ public class CropManager : MonoBehaviour
             {
                 if (!MapManager.Instance.IsValidPosition(pos)) continue;
                 var tile = MapManager.Instance.GetTile(pos);
-                if (tile.Crop != null) continue;
+                if (tile.Crop != null || _plantReserved.Contains(pos)) continue;
 
                 int dist = Mathf.Abs(pos.x - from.x) + Mathf.Abs(pos.y - from.y);
                 if (dist < minDist)
@@ -108,7 +117,7 @@ public class CropManager : MonoBehaviour
 
         foreach (var tile in _activeCrops)
         {
-            if (tile.Crop == null || !tile.Crop.IsReadyToHarvest) continue;
+            if (tile.Crop == null || !tile.Crop.IsReadyToHarvest || _harvestReserved.Contains(tile.Position)) continue;
 
             int dist = Mathf.Abs(tile.Position.x - from.x) + Mathf.Abs(tile.Position.y - from.y);
             if (dist < minDist)
@@ -120,4 +129,40 @@ public class CropManager : MonoBehaviour
 
         return nearest;
     }
+
+    /// <summary>
+    /// 指定座標の植付けを予約する（既に予約済みの場合はfalseを返す）
+    /// </summary>
+    /// <param name="pos">予約するタイル座標</param>
+    /// <returns>予約成功した場合true</returns>
+    public bool TryReservePlanting(Vector2Int pos)
+    {
+        if (_plantReserved.Contains(pos)) return false;
+        _plantReserved.Add(pos);
+        return true;
+    }
+
+    /// <summary>
+    /// 指定座標の植付け予約を解放する
+    /// </summary>
+    /// <param name="pos">解放するタイル座標</param>
+    public void ReleasePlanting(Vector2Int pos) => _plantReserved.Remove(pos);
+
+    /// <summary>
+    /// 指定座標の収穫を予約する（既に予約済みの場合はfalseを返す）
+    /// </summary>
+    /// <param name="pos">予約するタイル座標</param>
+    /// <returns>予約成功した場合true</returns>
+    public bool TryReserveHarvesting(Vector2Int pos)
+    {
+        if (_harvestReserved.Contains(pos)) return false;
+        _harvestReserved.Add(pos);
+        return true;
+    }
+
+    /// <summary>
+    /// 指定座標の収穫予約を解放する
+    /// </summary>
+    /// <param name="pos">解放するタイル座標</param>
+    public void ReleaseHarvesting(Vector2Int pos) => _harvestReserved.Remove(pos);
 }

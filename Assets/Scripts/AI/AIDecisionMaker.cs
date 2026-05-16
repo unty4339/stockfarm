@@ -161,21 +161,18 @@ public class AIDecisionMaker
 
     private AITaskBase TryCreateWorkTask()
     {
-        if (Owner is FarmerWorker)
+        var harvestTile = CropManager.Instance?.FindNearestHarvestReadyTile(Owner.GridPosition);
+        if (harvestTile != null)
         {
-            var harvestTile = CropManager.Instance?.FindNearestHarvestReadyTile(Owner.GridPosition);
-            if (harvestTile != null)
-            {
-                var t = new HarvestTask(Owner, harvestTile);
-                if (t.CanExecute()) return t;
-            }
+            var harvest = new HarvestTask(Owner, harvestTile);
+            if (harvest.CanExecute()) return harvest;
+        }
 
-            var plantTile = CropManager.Instance?.FindNearestEmptyAgricultureTile(Owner.GridPosition);
-            if (plantTile != null)
-            {
-                var t = new PlantTask(Owner, plantTile);
-                if (t.CanExecute()) return t;
-            }
+        var plantTile = CropManager.Instance?.FindNearestEmptyAgricultureTile(Owner.GridPosition);
+        if (plantTile != null)
+        {
+            var plant = new PlantTask(Owner, plantTile);
+            if (plant.CanExecute()) return plant;
         }
 
         if (Owner is CowWorker cowWorker && cowWorker.MilkAccumulation >= 5f)

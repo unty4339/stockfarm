@@ -27,6 +27,9 @@ public class GameTimeManager : MonoBehaviour
     private const int SlotsPerDay = 24;
     private const int TicksPerSlot = TicksPerDay / SlotsPerDay;
 
+    /// <summary>Play開始時の時間スロット（0〜23、10=10:00）</summary>
+    private const int InitialSlot = 10;
+
     /// <summary>現在のtick（0〜599）</summary>
     public int CurrentTick { get; private set; }
     /// <summary>経過日数</summary>
@@ -53,11 +56,23 @@ public class GameTimeManager : MonoBehaviour
         {
             _instance = this;
             DontDestroyOnLoad(gameObject);
+            ResetToInitialTime();
         }
         else if (_instance != this)
         {
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>
+    /// ゲーム開始時刻（昼10:00）にリセットする
+    /// </summary>
+    private void ResetToInitialTime()
+    {
+        CurrentDay = 0;
+        CurrentSlot = InitialSlot;
+        CurrentTick = InitialSlot * TicksPerSlot;
+        _tickTimer = 0f;
     }
 
     private void Update()

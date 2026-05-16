@@ -9,6 +9,7 @@ public class GameBootstrapper : MonoBehaviour
     private void Start()
     {
         SetupCropManager();
+        SetupItemVisualManager();
         PlaceInitialEquipments();
         SpawnInitialWorkers();
         SetupAgricultureZone();
@@ -23,6 +24,14 @@ public class GameBootstrapper : MonoBehaviour
     }
 
     /// <summary>
+    /// ItemVisualManagerをシーンに生成する
+    /// </summary>
+    private void SetupItemVisualManager()
+    {
+        new GameObject("ItemVisualManager").AddComponent<ItemVisualManager>();
+    }
+
+    /// <summary>
     /// 牧場主の初期位置付近に農業ゾーンを作成する
     /// </summary>
     private void SetupAgricultureZone()
@@ -31,6 +40,7 @@ public class GameBootstrapper : MonoBehaviour
         for (int x = 17; x <= 20; x++)
             for (int y = 13; y <= 16; y++)
                 positions.Add(new Vector2Int(x, y));
+
         ZoneManager.Instance.CreateZone(ZoneType.Agriculture, positions);
     }
 

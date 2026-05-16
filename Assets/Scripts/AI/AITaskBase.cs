@@ -79,7 +79,7 @@ public abstract class AITaskBase
     /// <summary>
     /// タスクを中断する
     /// </summary>
-    public void Interrupt()
+    public virtual void Interrupt()
     {
         State = AITaskState.Interrupted;
     }
