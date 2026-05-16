@@ -53,8 +53,9 @@ public class BuildModeUI : MonoBehaviour
         var mouse = Mouse.current;
         if (mouse == null) return;
 
-        var worldPos = _mainCamera.ScreenToWorldPoint(mouse.position.ReadValue());
-        var gridPos = new Vector2Int(Mathf.FloorToInt(worldPos.x), Mathf.FloorToInt(worldPos.y));
+        var screenPos = mouse.position.ReadValue();
+        var worldPos = _mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
+        var gridPos = GridHelper.WorldToGrid(worldPos);
 
         GhostPlacer.ShowGhost(CurrentType, gridPos);
 

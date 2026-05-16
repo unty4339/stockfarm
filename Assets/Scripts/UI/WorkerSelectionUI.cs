@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 矩形ドラッグ選択のオーバーレイと、複数ワーカー選択時のアイコンバーを管理するUI
+/// 矩形ドラッグ選択のオーバーレイと、複数ワーカー・複数施設選択時のアイコンバーを管理するUI
 /// </summary>
 public class WorkerSelectionUI : MonoBehaviour
 {
@@ -14,6 +14,7 @@ public class WorkerSelectionUI : MonoBehaviour
 
     private RectTransform _canvasRT;
     private WorkerPopupUI _workerPopupUI;
+    private FacilityPopupUI _facilityPopupUI;
 
     private GameObject _rectPanel;
     private RectTransform _rectRT;
@@ -28,6 +29,7 @@ public class WorkerSelectionUI : MonoBehaviour
     {
         _canvasRT = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
+        _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
         BuildRectOverlay();
         BuildIconBar();
     }
@@ -127,14 +129,55 @@ public class WorkerSelectionUI : MonoBehaviour
                 "",
                 new Vector2(xPos, 0f),
                 IconSize, IconSize,
-                () => OnIconClicked(worker));
+                () => OnWorkerIconClicked(worker));
 
             btn.GetComponent<Image>().color = worker.DisplayColor;
 
             UIHelper.CreateText(
                 btn.transform,
                 "IconLabel",
-                GetShortName(worker),
+                GetWorkerShortName(worker),
+                new Vector2(0f, -IconSize / 2f - 10f),
+                9f,
+                Color.white);
+
+            _iconButtons.Add(btn.gameObject);
+        }
+
+        _iconBarPanel.SetActive(true);
+    }
+
+    /// <summary>
+    /// 指定施設一覧のアイコンバーを画面下部に生成・表示する
+    /// </summary>
+    /// <param name="equipments">表示する施設の一覧</param>
+    public void ShowEquipmentIconBar(List<EquipmentBase> equipments)
+    {
+        ClearIconButtons();
+
+        float totalWidth = equipments.Count * IconSize + (equipments.Count - 1) * IconGap + IconGap * 2f;
+        _iconBarRT.sizeDelta = new Vector2(totalWidth, 60f);
+
+        float startX = -(totalWidth / 2f) + IconGap + IconSize / 2f;
+
+        for (int i = 0; i < equipments.Count; i++)
+        {
+            var equipment = equipments[i];
+            float xPos = startX + i * (IconSize + IconGap);
+
+            var btn = UIHelper.CreateButton(
+                _iconBarPanel.transform,
+                "",
+                new Vector2(xPos, 0f),
+                IconSize, IconSize,
+                () => OnEquipmentIconClicked(equipment));
+
+            btn.GetComponent<Image>().color = equipment.DisplayColor;
+
+            UIHelper.CreateText(
+                btn.transform,
+                "IconLabel",
+                equipment.Type.ToString(),
                 new Vector2(0f, -IconSize / 2f - 10f),
                 9f,
                 Color.white);
@@ -154,11 +197,18 @@ public class WorkerSelectionUI : MonoBehaviour
         ClearIconButtons();
     }
 
-    private void OnIconClicked(WorkerBase worker)
+    private void OnWorkerIconClicked(WorkerBase worker)
     {
         _workerPopupUI ??= FindFirstObjectByType<WorkerPopupUI>();
         HideIconBar();
         _workerPopupUI?.Show(worker);
+    }
+
+    private void OnEquipmentIconClicked(EquipmentBase equipment)
+    {
+        _facilityPopupUI ??= FindFirstObjectByType<FacilityPopupUI>();
+        HideIconBar();
+        _facilityPopupUI?.Show(equipment);
     }
 
     private void ClearIconButtons()
@@ -168,7 +218,7 @@ public class WorkerSelectionUI : MonoBehaviour
         _iconButtons.Clear();
     }
 
-    private static string GetShortName(WorkerBase worker)
+    private static string GetWorkerShortName(WorkerBase worker)
     {
         if (worker is CowWorker cow)
             return cow.CowName;

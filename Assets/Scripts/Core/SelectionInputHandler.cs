@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// マウスの左クリック・ドラッグ入力を監視し、ワーカー選択を制御する入力ハンドラ
+/// マウスの左クリック・ドラッグ入力を監視し、ワーカー・施設の選択を制御する入力ハンドラ
+/// ワーカーが優先され、範囲内にワーカーがいない場合のみ施設を対象にする
 /// BuildModeUI がアクティブな間はすべての処理をスキップする
 /// </summary>
 public class SelectionInputHandler : MonoBehaviour
@@ -15,6 +16,7 @@ public class SelectionInputHandler : MonoBehaviour
 
     private BuildModeUI _buildModeUI;
     private WorkerPopupUI _workerPopupUI;
+    private FacilityPopupUI _facilityPopupUI;
     private WorkerSelectionUI _workerSelectionUI;
     private Camera _mainCamera;
 
@@ -26,6 +28,7 @@ public class SelectionInputHandler : MonoBehaviour
     {
         _buildModeUI = FindFirstObjectByType<BuildModeUI>();
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
+        _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
         _workerSelectionUI = FindFirstObjectByType<WorkerSelectionUI>();
         _mainCamera = Camera.main;
     }
@@ -85,9 +88,22 @@ public class SelectionInputHandler : MonoBehaviour
         var workers = GetWorkersInRect(_mouseDownPos, screenPos);
 
         if (workers.Count == 1)
+        {
             _workerPopupUI?.Show(workers[0]);
+        }
         else if (workers.Count > 1)
+        {
             _workerSelectionUI?.ShowIconBar(workers);
+        }
+        else
+        {
+            // ワーカーが0人のとき施設を確認する
+            var equipments = GetEquipmentsInRect(_mouseDownPos, screenPos);
+            if (equipments.Count == 1)
+                _facilityPopupUI?.Show(equipments[0]);
+            else if (equipments.Count > 1)
+                _workerSelectionUI?.ShowEquipmentIconBar(equipments);
+        }
     }
 
     private void HandleSingleClick(Vector2 screenPos)
@@ -99,10 +115,18 @@ public class SelectionInputHandler : MonoBehaviour
         if (worker != null)
         {
             _workerPopupUI?.Show(worker);
+            return;
+        }
+
+        var equipment = FindEquipmentAtWorld(worldPos);
+        if (equipment != null)
+        {
+            _facilityPopupUI?.Show(equipment);
         }
         else
         {
             _workerPopupUI?.Hide();
+            _facilityPopupUI?.Hide();
             _workerSelectionUI?.HideIconBar();
         }
     }
@@ -125,6 +149,20 @@ public class SelectionInputHandler : MonoBehaviour
         return nearest;
     }
 
+    private EquipmentBase FindEquipmentAtWorld(Vector3 worldPos)
+    {
+        foreach (var eq in FindObjectsByType<EquipmentBase>(FindObjectsSortMode.None))
+        {
+            if (!eq.IsPlaced) continue;
+            var center = eq.transform.position;
+            float halfW = eq.Size.x * 0.5f;
+            float halfH = eq.Size.y * 0.5f;
+            if (Mathf.Abs(worldPos.x - center.x) <= halfW && Mathf.Abs(worldPos.y - center.y) <= halfH)
+                return eq;
+        }
+        return null;
+    }
+
     private List<WorkerBase> GetWorkersInRect(Vector2 screenStart, Vector2 screenEnd)
     {
         var worldStart = _mainCamera.ScreenToWorldPoint(new Vector3(screenStart.x, screenStart.y, 0f));
@@ -141,6 +179,32 @@ public class SelectionInputHandler : MonoBehaviour
             var p = worker.transform.position;
             if (p.x >= minX && p.x <= maxX && p.y >= minY && p.y <= maxY)
                 result.Add(worker);
+        }
+
+        return result;
+    }
+
+    private List<EquipmentBase> GetEquipmentsInRect(Vector2 screenStart, Vector2 screenEnd)
+    {
+        var worldStart = _mainCamera.ScreenToWorldPoint(new Vector3(screenStart.x, screenStart.y, 0f));
+        var worldEnd = _mainCamera.ScreenToWorldPoint(new Vector3(screenEnd.x, screenEnd.y, 0f));
+
+        float minX = Mathf.Min(worldStart.x, worldEnd.x);
+        float maxX = Mathf.Max(worldStart.x, worldEnd.x);
+        float minY = Mathf.Min(worldStart.y, worldEnd.y);
+        float maxY = Mathf.Max(worldStart.y, worldEnd.y);
+
+        var result = new List<EquipmentBase>();
+        foreach (var eq in FindObjectsByType<EquipmentBase>(FindObjectsSortMode.None))
+        {
+            if (!eq.IsPlaced) continue;
+            var center = eq.transform.position;
+            float halfW = eq.Size.x * 0.5f;
+            float halfH = eq.Size.y * 0.5f;
+            // 矩形と施設のAABBが重なっているか判定する
+            if (center.x + halfW > minX && center.x - halfW < maxX &&
+                center.y + halfH > minY && center.y - halfH < maxY)
+                result.Add(eq);
         }
 
         return result;

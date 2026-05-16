@@ -43,6 +43,7 @@ public class TimeDisplayUI : MonoBehaviour
         var bgRt = bg.AddComponent<RectTransform>();
         bgRt.anchorMin = new Vector2(1f, 0f);
         bgRt.anchorMax = new Vector2(1f, 0f);
+        bgRt.pivot = new Vector2(1f, 0f);
         bgRt.sizeDelta = new Vector2(220, 80);
         bgRt.anchoredPosition = new Vector2(-10, 10);
         bg.AddComponent<Image>().color = new Color(0, 0, 0, 0.6f);

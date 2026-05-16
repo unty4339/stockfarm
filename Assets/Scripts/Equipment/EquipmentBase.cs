@@ -25,6 +25,9 @@ public abstract class EquipmentBase : MonoBehaviour
     /// <summary>設備の表示色</summary>
     protected abstract Color EquipmentColor { get; }
 
+    /// <summary>UIアイコン表示用の色</summary>
+    public Color DisplayColor => EquipmentColor;
+
     private SpriteRenderer _spriteRenderer;
 
     /// <summary>
@@ -42,7 +45,7 @@ public abstract class EquipmentBase : MonoBehaviour
         _spriteRenderer.sprite = SpriteHelper.CreateColorSprite(EquipmentColor);
         _spriteRenderer.sortingOrder = 1;
 
-        var worldPos = GridToWorld(position, Size);
+        var worldPos = GridHelper.GridToWorld(position, Size);
         transform.position = new Vector3(worldPos.x, worldPos.y, -0.05f);
         transform.localScale = new Vector3(Size.x * 0.9f, Size.y * 0.9f, 1f);
 
@@ -96,11 +99,4 @@ public abstract class EquipmentBase : MonoBehaviour
         return positions;
     }
 
-    /// <summary>
-    /// グリッド座標をワールド座標に変換する
-    /// </summary>
-    protected static Vector2 GridToWorld(Vector2Int gridPos, Vector2Int size)
-    {
-        return new Vector2(gridPos.x + size.x * 0.5f - 0.5f, gridPos.y + size.y * 0.5f - 0.5f);
-    }
 }

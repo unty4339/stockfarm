@@ -30,7 +30,8 @@ public class GhostPlacer : MonoBehaviour
         _ghostRenderer.color = canPlace ? ValidColor : InvalidColor;
 
         var size = BuildingManager.GetEquipmentSize(type);
-        _ghostObject.transform.position = new Vector3(position.x + size.x * 0.5f - 0.5f, position.y + size.y * 0.5f - 0.5f, -0.1f);
+        var worldPos = GridHelper.GridToWorld(position, size);
+        _ghostObject.transform.position = new Vector3(worldPos.x, worldPos.y, -0.1f);
         _ghostObject.transform.localScale = new Vector3(size.x, size.y, 1f);
         _ghostObject.SetActive(true);
     }
