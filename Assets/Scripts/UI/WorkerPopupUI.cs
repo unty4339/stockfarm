@@ -24,18 +24,19 @@ public class WorkerPopupUI : MonoBehaviour
         var rt = _panel.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0f, 0.5f);
         rt.anchorMax = new Vector2(0f, 0.5f);
-        rt.sizeDelta = new Vector2(210, 160);
+        rt.sizeDelta = new Vector2(210, 185);
         rt.anchoredPosition = new Vector2(115, 0);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
         _nameText = UIHelper.CreateText(_panel.transform, "NameText", "名前",
-            new Vector2(0, 55), 14, Color.white);
+            new Vector2(0, 68), 14, Color.white);
         _statusText = UIHelper.CreateText(_panel.transform, "StatusText", "",
-            new Vector2(0, 5), 10, new Color(0.8f, 0.8f, 0.8f));
+            new Vector2(0, 15), 10, new Color(0.8f, 0.8f, 0.8f));
+        (_statusText.transform as RectTransform).sizeDelta = new Vector2(190, 65);
 
-        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -58), 70, 24, Hide);
-        UIHelper.CreateButton(_panel.transform, "優先度", new Vector2(0, -33), 70, 24, OnPriorityPressed);
+        UIHelper.CreateButton(_panel.transform, "優先度", new Vector2(0, -50), 70, 24, OnPriorityPressed);
+        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -75), 70, 24, Hide);
         _panel.SetActive(false);
     }
 
@@ -74,8 +75,10 @@ public class WorkerPopupUI : MonoBehaviour
         string effects = _currentWorker.ActiveEffects.Count > 0
             ? string.Join(", ", _currentWorker.ActiveEffects)
             : "なし";
+        string taskName = _currentWorker.CurrentTask?.GetType().Name ?? "待機中";
         _statusText.text = $"空腹:{_currentWorker.Hunger:0}  スタミナ:{_currentWorker.Stamina:0}\n" +
-                           $"幸福:{_currentWorker.Happiness:0}\n状態: {effects}";
+                           $"幸福:{_currentWorker.Happiness:0}\n状態: {effects}\n" +
+                           $"行動: {taskName}";
     }
 
     private void OnPriorityPressed()

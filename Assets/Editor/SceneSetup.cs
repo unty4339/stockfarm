@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 /// <summary>
@@ -15,11 +17,36 @@ public static class SceneSetup
     [MenuItem("StockFarm/Setup Scene")]
     public static void SetupScene()
     {
+        SetupEventSystem();
         SetupManagers();
         SetupCamera();
         SetupCanvas();
 
         Debug.Log("[SceneSetup] シーンセットアップが完了しました");
+    }
+
+    /// <summary>
+    /// EventSystem が新 Input System と連携できるよう InputSystemUIInputModule を設定する
+    /// 旧来の StandaloneInputModule が残っている場合は差し替える
+    /// </summary>
+    private static void SetupEventSystem()
+    {
+        var existing = Object.FindFirstObjectByType<EventSystem>();
+        if (existing == null)
+        {
+            var esGo = new GameObject("EventSystem");
+            Undo.RegisterCreatedObjectUndo(esGo, "Create EventSystem");
+            existing = esGo.AddComponent<EventSystem>();
+        }
+
+        var standaloneModule = existing.GetComponent<StandaloneInputModule>();
+        if (standaloneModule != null)
+            Object.DestroyImmediate(standaloneModule);
+
+        if (existing.GetComponent<InputSystemUIInputModule>() == null)
+            existing.gameObject.AddComponent<InputSystemUIInputModule>();
+
+        EditorUtility.SetDirty(existing.gameObject);
     }
 
     /// <summary>
@@ -33,6 +60,7 @@ public static class SceneSetup
         EnsureComponent<BuildingManager>("BuildingManager");
         EnsureComponent<RoomManager>("RoomManager");
         EnsureComponent<EconomyManager>("EconomyManager");
+        EnsureComponent<SelectionInputHandler>("SelectionInputHandler");
     }
 
     /// <summary>
@@ -53,6 +81,10 @@ public static class SceneSetup
         cam.orthographicSize = 17f;
         cam.transform.position = new Vector3(15f, 15f, -10f);
         cam.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
+
+        if (cam.GetComponent<CameraController>() == null)
+            cam.gameObject.AddComponent<CameraController>();
+
         EditorUtility.SetDirty(cam.gameObject);
     }
 
@@ -89,6 +121,7 @@ public static class SceneSetup
         EnsureChildComponent<FacilityPopupUI>(canvas.transform, "FacilityPopupUI");
         EnsureChildComponent<WorkerPopupUI>(canvas.transform, "WorkerPopupUI");
         EnsureChildComponent<BuildModeUI>(canvas.transform, "BuildModeUI");
+        EnsureChildComponent<WorkerSelectionUI>(canvas.transform, "WorkerSelectionUI");
 
         EditorUtility.SetDirty(canvas.gameObject);
     }

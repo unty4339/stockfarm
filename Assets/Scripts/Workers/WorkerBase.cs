@@ -37,6 +37,9 @@ public abstract class WorkerBase : MonoBehaviour
     /// <summary>ワーカーの表示色</summary>
     protected abstract Color WorkerColor { get; }
 
+    /// <summary>UIアイコン表示用の色</summary>
+    public Color DisplayColor => WorkerColor;
+
     /// <summary>AIの意思決定コンポーネント</summary>
     public AIDecisionMaker DecisionMaker { get; private set; }
 
