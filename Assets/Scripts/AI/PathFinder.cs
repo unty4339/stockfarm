@@ -6,9 +6,14 @@ using UnityEngine;
 /// </summary>
 public static class PathFinder
 {
+    private const int CardinalCostFactor = 10;
+    private const int DiagonalCostFactor = 14; // √2 ≈ 1.414 の整数近似
+
     private static readonly Vector2Int[] Directions = new[]
     {
-        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
+        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+        new Vector2Int( 1,  1), new Vector2Int(-1,  1),
+        new Vector2Int( 1, -1), new Vector2Int(-1, -1),
     };
 
     /// <summary>
@@ -46,10 +51,20 @@ public static class PathFinder
                 var neighborPos = current.Position + dir;
                 if (closedSet.Contains(neighborPos)) continue;
 
+                bool isDiagonal = dir.x != 0 && dir.y != 0;
+
+                // 斜め移動時のコーナーカット防止：隣接する縦横タイルが両方通行可能な場合のみ許可
+                if (isDiagonal)
+                {
+                    int sideX = costProvider.GetCost(current.Position + new Vector2Int(dir.x, 0));
+                    int sideY = costProvider.GetCost(current.Position + new Vector2Int(0, dir.y));
+                    if (sideX == int.MaxValue || sideY == int.MaxValue) continue;
+                }
+
                 int cost = costProvider.GetCost(neighborPos);
                 if (cost == int.MaxValue) continue;
 
-                int newGCost = current.GCost + cost;
+                int newGCost = current.GCost + cost * (isDiagonal ? DiagonalCostFactor : CardinalCostFactor);
 
                 if (nodeMap.TryGetValue(neighborPos, out var existing))
                 {
@@ -73,7 +88,10 @@ public static class PathFinder
 
     private static int Heuristic(Vector2Int a, Vector2Int b)
     {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+        int dx = Mathf.Abs(a.x - b.x);
+        int dy = Mathf.Abs(a.y - b.y);
+        // オクタイル距離（8方向移動に対してadmissibleなヒューリスティック）
+        return CardinalCostFactor * Mathf.Max(dx, dy) + (DiagonalCostFactor - CardinalCostFactor) * Mathf.Min(dx, dy);
     }
 
     private static PathNode GetLowestFCost(List<PathNode> nodes)
