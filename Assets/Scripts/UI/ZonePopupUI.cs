@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 選択ゾーンの情報と優先度を設定するポップアップパネル
+/// 選択ゾーンの情報・優先度設定・削除を行うポップアップパネル
+/// 保管/農業ゾーンのクリック時に表示される
 /// </summary>
 public class ZonePopupUI : MonoBehaviour
 {
@@ -33,18 +34,20 @@ public class ZonePopupUI : MonoBehaviour
         rt.anchorMin = new Vector2(0f, 0f);
         rt.anchorMax = new Vector2(0f, 0f);
         rt.pivot = new Vector2(0f, 0f);
-        rt.sizeDelta = new Vector2(500, 120);
+        rt.sizeDelta = new Vector2(500, 280);
         rt.anchoredPosition = new Vector2(10, 120);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.75f);
 
         _typeLabel = UIHelper.CreateText(_panel.transform, "ZoneTypeLabel", "",
-            new Vector2(-100, 0), 26, Color.white);
-        _typeLabel.rectTransform.sizeDelta = new Vector2(260, 60);
+            new Vector2(0, 100), 26, Color.white);
+        _typeLabel.rectTransform.sizeDelta = new Vector2(460, 60);
 
         _priorityButton = UIHelper.CreateButton(_panel.transform, "",
-            new Vector2(160, 0), 200, 64, CyclePriority, 24);
+            new Vector2(0, 20), 400, 64, CyclePriority, 24);
         _priorityLabel = _priorityButton.GetComponentInChildren<TextMeshProUGUI>();
+
+        UIHelper.CreateButton(_panel.transform, "削除", new Vector2(0, -80), 400, 64, OnDeletePressed, 24);
     }
 
     /// <summary>
@@ -87,6 +90,32 @@ public class ZonePopupUI : MonoBehaviour
         _currentZone.Priority = (_currentZone.Priority % 10) + 1;
         if (_priorityLabel != null)
             _priorityLabel.text = $"優先度: {_currentZone.Priority}";
+    }
+
+    /// <summary>
+    /// 削除ボタン押下時の処理。農業ゾーンはゾーン内の農作物もすべて削除する
+    /// </summary>
+    private void OnDeletePressed()
+    {
+        if (_currentZone == null) return;
+
+        if (_currentZone.Type == ZoneType.Agriculture)
+        {
+            var cropManager = FindFirstObjectByType<CropManager>();
+            if (cropManager != null)
+            {
+                foreach (var pos in _currentZone.TilePositions)
+                {
+                    var tile = MapManager.Instance.GetTileOrNull(pos);
+                    if (tile?.Crop != null)
+                        cropManager.RemoveCrop(tile);
+                }
+            }
+        }
+
+        var zoneManager = FindFirstObjectByType<ZoneManager>();
+        zoneManager?.RemoveZone(_currentZone);
+        Hide();
     }
 
     private static string ZoneTypeToJP(ZoneType type) => type switch

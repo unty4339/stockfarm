@@ -34,7 +34,6 @@ public class MenuBarUI : MonoBehaviour
         FacilityMenuUI = gameObject.AddComponent<FacilityMenuUI>();
         ZoneMenuUI = gameObject.AddComponent<ZoneMenuUI>();
         gameObject.AddComponent<ZonePlacementModeUI>();
-        gameObject.AddComponent<ZonePopupUI>();
     }
 
     /// <summary>
