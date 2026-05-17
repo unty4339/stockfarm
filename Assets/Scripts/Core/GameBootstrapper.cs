@@ -10,6 +10,7 @@ public class GameBootstrapper : MonoBehaviour
     {
         SetupCropManager();
         SetupItemVisualManager();
+        SetupStorageManager();
         PlaceInitialEquipments();
         SpawnInitialWorkers();
         SetupAgricultureZone();
@@ -29,6 +30,14 @@ public class GameBootstrapper : MonoBehaviour
     private void SetupItemVisualManager()
     {
         new GameObject("ItemVisualManager").AddComponent<ItemVisualManager>();
+    }
+
+    /// <summary>
+    /// StorageManagerをシーンに生成する
+    /// </summary>
+    private void SetupStorageManager()
+    {
+        new GameObject("StorageManager").AddComponent<StorageManager>();
     }
 
     /// <summary>

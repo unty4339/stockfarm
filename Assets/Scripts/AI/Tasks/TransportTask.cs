@@ -52,7 +52,7 @@ public class TransportTask : AITaskBase
                 {
                     _phase = TransportPhase.Delivering;
                     if (_destination is EquipmentBase dstEq)
-                        TargetPosition = dstEq.GridPosition;
+                        RestartMovingTo(dstEq.GridPosition);
                 }
                 break;
             case TransportPhase.Delivering:

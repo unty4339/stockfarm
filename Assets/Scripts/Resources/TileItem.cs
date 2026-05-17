@@ -62,6 +62,19 @@ public class TileItem
     }
 
     /// <summary>
+    /// 指定数をスタックから取り出す（非スタックアイテムは常に0を返す）
+    /// </summary>
+    /// <param name="amount">取り出したい数</param>
+    /// <returns>実際に取り出した数</returns>
+    public int TryTake(int amount)
+    {
+        if (!IsStackable) return 0;
+        int taken = Mathf.Min(amount, StackCount);
+        StackCount -= taken;
+        return taken;
+    }
+
+    /// <summary>
     /// ResourceTypeごとのスタック上限を返す（0の場合はスタック不可）
     /// </summary>
     public static int GetStackLimit(ResourceType type) => type switch

@@ -45,19 +45,19 @@ public class TimeDisplayUI : MonoBehaviour
         bgRt.anchorMin = new Vector2(1f, 0f);
         bgRt.anchorMax = new Vector2(1f, 0f);
         bgRt.pivot = new Vector2(1f, 0f);
-        bgRt.sizeDelta = new Vector2(220, 80);
-        bgRt.anchoredPosition = new Vector2(-10, 10);
+        bgRt.sizeDelta = new Vector2(440, 160);
+        bgRt.anchoredPosition = new Vector2(-20, 20);
         bg.AddComponent<Image>().color = new Color(0, 0, 0, 0.6f);
 
         _timeText = UIHelper.CreateText(bg.transform, "TimeText", "Day 1 | 10:00",
-            new Vector2(0, 22), 13, Color.white);
+            new Vector2(0, 44), 26, Color.white);
         _fundsText = UIHelper.CreateText(bg.transform, "FundsText", "資金: 2000",
-            new Vector2(0, 2), 13, Color.white);
+            new Vector2(0, 4), 26, Color.white);
 
-        UIHelper.CreateButton(bg.transform, "||", new Vector2(-80, -22), 36, 20, OnPausePressed);
-        UIHelper.CreateButton(bg.transform, "×1", new Vector2(-40, -22), 36, 20, () => OnSpeedChanged(1f));
-        UIHelper.CreateButton(bg.transform, "×2", new Vector2(0, -22), 36, 20, () => OnSpeedChanged(2f));
-        UIHelper.CreateButton(bg.transform, "×3", new Vector2(40, -22), 36, 20, () => OnSpeedChanged(3f));
+        UIHelper.CreateButton(bg.transform, "||", new Vector2(-160, -44), 72, 40, OnPausePressed, 24);
+        UIHelper.CreateButton(bg.transform, "×1", new Vector2(-80, -44), 72, 40, () => OnSpeedChanged(1f), 24);
+        UIHelper.CreateButton(bg.transform, "×2", new Vector2(0, -44), 72, 40, () => OnSpeedChanged(2f), 24);
+        UIHelper.CreateButton(bg.transform, "×3", new Vector2(80, -44), 72, 40, () => OnSpeedChanged(3f), 24);
     }
 
     private void OnTick(int tick)

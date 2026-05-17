@@ -24,10 +24,10 @@ public class MenuBarUI : MonoBehaviour
     {
         var bar = CreateBarPanel();
 
-        CreateMenuButton(bar.transform, "指令", new Vector2(-180, 0), ShowCommandMenu);
-        CreateMenuButton(bar.transform, "優先順位", new Vector2(-60, 0), ShowPriorityMenu);
-        CreateMenuButton(bar.transform, "施設", new Vector2(60, 0), ShowFacilityMenu);
-        CreateMenuButton(bar.transform, "ゾーン設定", new Vector2(180, 0), ShowZoneMenu);
+        CreateMenuButton(bar.transform, "指令", new Vector2(-360, 0), ShowCommandMenu);
+        CreateMenuButton(bar.transform, "優先順位", new Vector2(-120, 0), ShowPriorityMenu);
+        CreateMenuButton(bar.transform, "施設", new Vector2(120, 0), ShowFacilityMenu);
+        CreateMenuButton(bar.transform, "ゾーン設定", new Vector2(360, 0), ShowZoneMenu);
 
         CommandMenuUI = gameObject.AddComponent<CommandMenuUI>();
         PriorityMenuUI = gameObject.AddComponent<PriorityMenuUI>();
@@ -91,8 +91,8 @@ public class MenuBarUI : MonoBehaviour
         var rt = go.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0.5f, 0f);
         rt.anchorMax = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(520, 50);
-        rt.anchoredPosition = new Vector2(0, 30);
+        rt.sizeDelta = new Vector2(1040, 100);
+        rt.anchoredPosition = new Vector2(0, 60);
         var img = go.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.7f);
         return go;
@@ -100,6 +100,6 @@ public class MenuBarUI : MonoBehaviour
 
     private void CreateMenuButton(Transform parent, string label, Vector2 pos, UnityEngine.Events.UnityAction onClick)
     {
-        UIHelper.CreateButton(parent, label, pos, 100, 40, onClick);
+        UIHelper.CreateButton(parent, label, pos, 200, 80, onClick, 24);
     }
 }

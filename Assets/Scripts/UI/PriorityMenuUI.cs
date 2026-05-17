@@ -114,8 +114,7 @@ public class PriorityMenuUI : MonoBehaviour
         float tableHeight = (rows + 1) * RowHeight;
         var panelRt = _panel.GetComponent<RectTransform>();
         panelRt.sizeDelta = new Vector2(tableWidth + Padding * 2f, tableHeight + Padding * 2f);
-        // メニューバー（高さ50、y=30）の上端（y=55）のすぐ上に配置
-        panelRt.anchoredPosition = new Vector2(0f, 55f + (tableHeight + Padding * 2f) * 0.5f);
+        panelRt.anchoredPosition = UIHelper.SubMenuPanelAnchoredPosition;
 
         // ヘッダー行
         AddCell("名前", 0, 0, NameColumnWidth, isHeader: true, null, null);

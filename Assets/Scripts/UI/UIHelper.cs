@@ -14,6 +14,9 @@ public static class UIHelper
     private const string FontAddress = "DefaultUIFont.asset";
     private static TMP_FontAsset _font;
 
+    /// <summary>メニューバーから開くサブメニューパネルの anchoredPosition</summary>
+    public static readonly Vector2 SubMenuPanelAnchoredPosition = new Vector2(0f, 190f);
+
     /// <summary>
     /// 現在のマウス位置が UI 要素上かどうかを EventSystem のレイキャストで判定する
     /// </summary>
@@ -104,7 +107,7 @@ public static class UIHelper
     /// <param name="onClick">クリック時のコールバック</param>
     /// <returns>生成した Button</returns>
     public static Button CreateButton(Transform parent, string label, Vector2 anchoredPos,
-        float width, float height, UnityEngine.Events.UnityAction onClick)
+        float width, float height, UnityEngine.Events.UnityAction onClick, float fontSize = 12)
     {
         EnsureFont();
 
@@ -132,7 +135,7 @@ public static class UIHelper
         textRt.anchoredPosition = Vector2.zero;
         var tmp = textGo.AddComponent<TextMeshProUGUI>();
         tmp.text = label;
-        tmp.fontSize = 12;
+        tmp.fontSize = fontSize;
         tmp.color = Color.white;
         tmp.alignment = TextAlignmentOptions.Center;
         if (_font != null) tmp.font = _font;

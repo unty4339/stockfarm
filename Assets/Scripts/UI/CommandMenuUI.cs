@@ -20,7 +20,7 @@ public class CommandMenuUI : MonoBehaviour
         rt.anchorMin = new Vector2(0.5f, 0f);
         rt.anchorMax = new Vector2(0.5f, 0f);
         rt.sizeDelta = new Vector2(300, 100);
-        rt.anchoredPosition = new Vector2(0, 90);
+        rt.anchoredPosition = UIHelper.SubMenuPanelAnchoredPosition;
         var img = _panel.AddComponent<UnityEngine.UI.Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
 

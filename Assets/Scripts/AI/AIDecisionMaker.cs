@@ -35,6 +35,7 @@ public class AIDecisionMaker
         TaskPriorities[typeof(TransportTask)] = 5;
         TaskPriorities[typeof(HarvestTask)] = 4;
         TaskPriorities[typeof(PlantTask)] = 5;
+        TaskPriorities[typeof(PickUpTask)] = 4;
         TaskPriorities[typeof(CleanTask)] = 6;
         TaskPriorities[typeof(IdleWalkTask)] = 7;
     }
@@ -161,6 +162,17 @@ public class AIDecisionMaker
 
     private AITaskBase TryCreateWorkTask()
     {
+        if (Owner is FarmerWorker)
+        {
+            var pickupTile = StorageManager.Instance?.FindNearestPickupTile(Owner.GridPosition);
+            if (pickupTile != null && StorageManager.Instance.TryReservePickup(pickupTile.Position))
+            {
+                var pickUp = new PickUpTask(Owner, pickupTile);
+                if (pickUp.CanExecute()) return pickUp;
+                StorageManager.Instance.ReleasePickup(pickupTile.Position);
+            }
+        }
+
         var harvestTile = CropManager.Instance?.FindNearestHarvestReadyTile(Owner.GridPosition);
         if (harvestTile != null)
         {

@@ -19,6 +19,24 @@ public abstract class AITaskBase
     private int _pathIndex;
 
     /// <summary>
+    /// 新しい目標座標へ向けて移動を再開する（OnExecute内でフェーズ切替時に使用）
+    /// </summary>
+    /// <param name="newTarget">次の目標座標</param>
+    protected void RestartMovingTo(Vector2Int newTarget)
+    {
+        TargetPosition = newTarget;
+        if (Owner.GridPosition == newTarget)
+        {
+            State = AITaskState.Executing;
+            return;
+        }
+        var costProvider = new MapPathCostProvider();
+        _path = PathFinder.FindPath(Owner.GridPosition, newTarget, costProvider);
+        _pathIndex = 0;
+        State = _path.Count > 0 ? AITaskState.Moving : AITaskState.Interrupted;
+    }
+
+    /// <summary>
     /// このタスクが現在実行可能かを判定する
     /// </summary>
     /// <returns>実行可能な場合true</returns>
