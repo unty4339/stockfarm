@@ -15,6 +15,7 @@ public class SelectionInputHandler : MonoBehaviour
 
     private BuildModeUI _buildModeUI;
     private ZonePlacementModeUI _zonePlacementModeUI;
+    private DemolishModeUI _demolishModeUI;
     private WorkerPopupUI _workerPopupUI;
     private FacilityPopupUI _facilityPopupUI;
     private ZonePopupUI _zonePopupUI;
@@ -30,6 +31,7 @@ public class SelectionInputHandler : MonoBehaviour
     {
         _buildModeUI = FindFirstObjectByType<BuildModeUI>();
         _zonePlacementModeUI = FindFirstObjectByType<ZonePlacementModeUI>();
+        _demolishModeUI = FindFirstObjectByType<DemolishModeUI>();
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
         _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
         _zonePopupUI = FindFirstObjectByType<ZonePopupUI>();
@@ -45,6 +47,7 @@ public class SelectionInputHandler : MonoBehaviour
 
         if (_buildModeUI != null && _buildModeUI.IsInBuildMode) return;
         if (_zonePlacementModeUI != null && _zonePlacementModeUI.IsInZonePlacementMode) return;
+        if (_demolishModeUI != null && _demolishModeUI.IsInDemolishMode) return;
 
         if (mouse.leftButton.wasPressedThisFrame)
             OnMouseDown(mouse.position.ReadValue());

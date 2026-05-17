@@ -33,6 +33,9 @@ public class PickUpTask : AITaskBase
     /// <inheritdoc/>
     public override bool CanExecute()
     {
+        // PickingUp フェーズを過ぎていれば搬送中なので、ソースタイルの状態に関わらず続行する
+        if (_phase != Phase.PickingUp) return true;
+
         return _sourceTile.PlacedItem != null &&
                _sourceTile.Zone?.Type != ZoneType.Storage &&
                StorageManager.Instance != null &&

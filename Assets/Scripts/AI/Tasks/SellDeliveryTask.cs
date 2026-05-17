@@ -27,6 +27,9 @@ public class SellDeliveryTask : AITaskBase
     /// <inheritdoc/>
     public override bool CanExecute()
     {
+        // Delivering フェーズはアイテム搬送中なので、ソースタイルの状態に関わらず続行する
+        if (_phase != Phase.PickingUp) return true;
+
         return _sourceTile.PlacedItem?.SellFlag == true &&
                DeliveryBox.Instance != null &&
                DeliveryBox.Instance.HasCapacity();

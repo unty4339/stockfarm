@@ -54,7 +54,8 @@ public class CommandMenuUI : MonoBehaviour
     /// </summary>
     public void OnDemolishPressed()
     {
-        Debug.Log("[CommandMenuUI] 解体モード開始（未実装）");
+        Hide();
+        FindFirstObjectByType<DemolishModeUI>()?.EnterDemolishMode();
     }
 
     /// <summary>
