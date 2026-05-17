@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ボトル詰め機。牛乳5単位→瓶牛乳1本に加工する（50tick/サイクル）
+/// ボトル詰め機。牛乳5単位→瓶牛乳1本に加工する（3000tick/サイクル）
 /// </summary>
 public class BottleFiller : ProcessingEquipmentBase
 {
@@ -16,7 +16,7 @@ public class BottleFiller : ProcessingEquipmentBase
     public override int InputAmount => 5;
     public override ResourceType OutputType => ResourceType.BottledMilk;
     public override int OutputAmount => 1;
-    public override int CycleTicks => 50;
+    public override int CycleTicks => 3000;
 
     private void Awake()
     {

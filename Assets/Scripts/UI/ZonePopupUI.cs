@@ -15,8 +15,14 @@ public class ZonePopupUI : MonoBehaviour
 
     private void Awake()
     {
+        PopupCoordinator.OnAnyPopupShown += Hide;
         BuildPanel();
         _panel.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        PopupCoordinator.OnAnyPopupShown -= Hide;
     }
 
     private void BuildPanel()
@@ -24,19 +30,20 @@ public class ZonePopupUI : MonoBehaviour
         _panel = new GameObject("ZonePopupPanel");
         _panel.transform.SetParent(transform, false);
         var rt = _panel.AddComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0.5f, 0f);
-        rt.anchorMax = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(250, 60);
-        rt.anchoredPosition = new Vector2(0, 90);
+        rt.anchorMin = new Vector2(0f, 0f);
+        rt.anchorMax = new Vector2(0f, 0f);
+        rt.pivot = new Vector2(0f, 0f);
+        rt.sizeDelta = new Vector2(500, 120);
+        rt.anchoredPosition = new Vector2(10, 120);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.75f);
 
         _typeLabel = UIHelper.CreateText(_panel.transform, "ZoneTypeLabel", "",
-            new Vector2(-50, 0), 13, Color.white);
-        _typeLabel.rectTransform.sizeDelta = new Vector2(130, 30);
+            new Vector2(-100, 0), 26, Color.white);
+        _typeLabel.rectTransform.sizeDelta = new Vector2(260, 60);
 
         _priorityButton = UIHelper.CreateButton(_panel.transform, "",
-            new Vector2(80, 0), 100, 32, CyclePriority);
+            new Vector2(160, 0), 200, 64, CyclePriority, 24);
         _priorityLabel = _priorityButton.GetComponentInChildren<TextMeshProUGUI>();
     }
 
@@ -46,6 +53,7 @@ public class ZonePopupUI : MonoBehaviour
     /// <param name="zone">表示するゾーン</param>
     public void Show(ZoneData zone)
     {
+        PopupCoordinator.NotifyShown();
         _currentZone = zone;
         _panel.SetActive(true);
         RefreshDisplay();

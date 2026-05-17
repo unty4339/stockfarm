@@ -17,7 +17,7 @@ public class ZoneMenuUI : MonoBehaviour
         var rt = _panel.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0f, 0f);
         rt.anchorMax = new Vector2(1f, 0f);
-        rt.sizeDelta = new Vector2(0, 80);
+        rt.sizeDelta = new Vector2(0, 160);
         rt.anchoredPosition = UIHelper.SubMenuPanelAnchoredPosition;
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
@@ -45,11 +45,11 @@ public class ZoneMenuUI : MonoBehaviour
     private void BuildButtons()
     {
         UIHelper.CreateButton(_panel.transform, "保管ゾーン",
-            new Vector2(-90, 0), 80, 36, () => OnZoneTypeSelected(ZoneType.Storage));
+            new Vector2(-180, 0), 160, 72, () => OnZoneTypeSelected(ZoneType.Storage), 24);
 
         // TODO: 農業ゾーンは未実装のため非活性表示
         var agriBtn = UIHelper.CreateButton(_panel.transform, "農業ゾーン",
-            new Vector2(0, 0), 80, 36, null);
+            new Vector2(0, 0), 160, 72, null, 24);
         agriBtn.interactable = false;
     }
 

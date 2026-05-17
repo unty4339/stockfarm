@@ -3,6 +3,6 @@
 /// </summary>
 public enum CropType
 {
-    /// <summary>小麦（10tickで収穫可能）</summary>
+    /// <summary>小麦（600tickで収穫可能）</summary>
     Wheat,
 }

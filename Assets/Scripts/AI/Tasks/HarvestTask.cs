@@ -3,7 +3,7 @@
 /// </summary>
 public class HarvestTask : AITaskBase
 {
-    private const int WorkTicksRequired = 3;
+    private const int WorkTicksRequired = 180;
 
     private readonly GridTile _tile;
     private int _workTicksElapsed;

@@ -119,6 +119,7 @@ public static class SceneSetup
         EnsureChildComponent<PriorityMenuUI>(canvas.transform, "PriorityMenuUI");
         EnsureChildComponent<FacilityMenuUI>(canvas.transform, "FacilityMenuUI");
         EnsureChildComponent<FacilityPopupUI>(canvas.transform, "FacilityPopupUI");
+        EnsureChildComponent<ItemPopupUI>(canvas.transform, "ItemPopupUI");
         EnsureChildComponent<WorkerPopupUI>(canvas.transform, "WorkerPopupUI");
         EnsureChildComponent<BuildModeUI>(canvas.transform, "BuildModeUI");
         EnsureChildComponent<WorkerSelectionUI>(canvas.transform, "WorkerSelectionUI");

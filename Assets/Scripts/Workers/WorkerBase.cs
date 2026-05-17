@@ -6,11 +6,14 @@ using UnityEngine;
 /// </summary>
 public abstract class WorkerBase : MonoBehaviour
 {
-    private const float HungerIncreasePerTick = 0.05f;
+    private const float HungerIncreasePerTick = 0.05f / 60f;
     private const float HungryThreshold = 70f;
-    private const int MalnutritionTicks = 300;
-    private const float StaminaDecreasePerTick = 0.03f;
-    private const float BaseStaminaRecovery = 0.2f;
+    private const int MalnutritionTicks = 18000;
+    private const float StaminaDecreasePerTick = 0.03f / 60f;
+    private const float BaseStaminaRecovery = 0.2f / 60f;
+
+    /// <summary>1マス移動に要するtick数（サブクラスでオーバーライド可能）</summary>
+    public virtual int MovementTicksPerCell => 60;
 
     /// <summary>空腹度（0〜100、0が満腹、100が飢餓）</summary>
     public float Hunger { get; protected set; }
@@ -77,7 +80,8 @@ public abstract class WorkerBase : MonoBehaviour
             _visualInitialized = true;
         }
         float timeScale = GameTimeManager.Instance != null ? GameTimeManager.Instance.TimeScale : 1f;
-        _visualPosition = Vector3.MoveTowards(_visualPosition, targetPos, timeScale * Time.deltaTime);
+        float cellsPerSecond = (float)GameTimeManager.TicksPerSecond / MovementTicksPerCell * timeScale;
+        _visualPosition = Vector3.MoveTowards(_visualPosition, targetPos, cellsPerSecond * Time.deltaTime);
         transform.position = _visualPosition;
     }
 

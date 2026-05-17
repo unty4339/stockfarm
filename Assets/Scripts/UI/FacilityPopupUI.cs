@@ -13,7 +13,13 @@ public class FacilityPopupUI : MonoBehaviour
 
     private void Awake()
     {
+        PopupCoordinator.OnAnyPopupShown += Hide;
         BuildPanel();
+    }
+
+    private void OnDestroy()
+    {
+        PopupCoordinator.OnAnyPopupShown -= Hide;
     }
 
     private void BuildPanel()
@@ -21,19 +27,20 @@ public class FacilityPopupUI : MonoBehaviour
         _panel = new GameObject("FacilityPopup");
         _panel.transform.SetParent(transform, false);
         var rt = _panel.AddComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0f, 0.5f);
-        rt.anchorMax = new Vector2(0f, 0.5f);
-        rt.sizeDelta = new Vector2(200, 120);
-        rt.anchoredPosition = new Vector2(110, 0);
+        rt.anchorMin = new Vector2(0f, 0f);
+        rt.anchorMax = new Vector2(0f, 0f);
+        rt.pivot = new Vector2(0f, 0f);
+        rt.sizeDelta = new Vector2(400, 240);
+        rt.anchoredPosition = new Vector2(10, 120);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
         _nameText = UIHelper.CreateText(_panel.transform, "NameText", "設備名",
-            new Vector2(0, 40), 14, Color.white);
+            new Vector2(0, 80), 28, Color.white);
         _infoText = UIHelper.CreateText(_panel.transform, "InfoText", "",
-            new Vector2(0, 0), 11, new Color(0.8f, 0.8f, 0.8f));
+            new Vector2(0, 0), 22, new Color(0.8f, 0.8f, 0.8f));
 
-        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -42), 70, 24, Hide);
+        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -84), 140, 48, Hide, 24);
         _panel.SetActive(false);
     }
 
@@ -43,6 +50,7 @@ public class FacilityPopupUI : MonoBehaviour
     /// <param name="equipment">表示する設備</param>
     public void Show(EquipmentBase equipment)
     {
+        PopupCoordinator.NotifyShown();
         _panel?.SetActive(true);
         _nameText.text = equipment.Type.ToString();
         _infoText.text = $"コスト: {equipment.BuildCost}\nムード: {equipment.AffectedMoodType} +{equipment.MoodBonus}";

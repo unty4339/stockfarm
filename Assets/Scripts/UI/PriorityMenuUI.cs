@@ -31,11 +31,11 @@ public class PriorityCell : MonoBehaviour, IPointerClickHandler
 /// </summary>
 public class PriorityMenuUI : MonoBehaviour
 {
-    private const float NameColumnWidth = 90f;
-    private const float TaskCellWidth = 52f;
-    private const float RowHeight = 30f;
-    private const float Padding = 8f;
-    private const float Border = 2f;
+    private const float NameColumnWidth = 180f;
+    private const float TaskCellWidth = 104f;
+    private const float RowHeight = 60f;
+    private const float Padding = 16f;
+    private const float Border = 4f;
 
     /// <summary>表示するタスク種別と列ヘッダーラベルの対応表</summary>
     private static readonly (Type taskType, string label)[] TaskColumns =
@@ -188,7 +188,7 @@ public class PriorityMenuUI : MonoBehaviour
         textRt.anchoredPosition = Vector2.zero;
         var tmp = textGo.AddComponent<TextMeshProUGUI>();
         tmp.text = text;
-        tmp.fontSize = 11f;
+        tmp.fontSize = 22f;
         tmp.color = Color.white;
         tmp.alignment = TextAlignmentOptions.Center;
         UIHelper.ApplyFont(tmp);

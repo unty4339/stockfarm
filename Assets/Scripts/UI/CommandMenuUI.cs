@@ -19,14 +19,14 @@ public class CommandMenuUI : MonoBehaviour
         var rt = _panel.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0.5f, 0f);
         rt.anchorMax = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(300, 100);
+        rt.sizeDelta = new Vector2(600, 200);
         rt.anchoredPosition = UIHelper.SubMenuPanelAnchoredPosition;
         var img = _panel.AddComponent<UnityEngine.UI.Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
 
-        UIHelper.CreateButton(_panel.transform, "解体", new Vector2(-90, 0), 80, 36, OnDemolishPressed);
-        UIHelper.CreateButton(_panel.transform, "種付け", new Vector2(0, 0), 80, 36, OnBreedPressed);
-        UIHelper.CreateButton(_panel.transform, "搾乳", new Vector2(90, 0), 80, 36, OnMilkPressed);
+        UIHelper.CreateButton(_panel.transform, "解体", new Vector2(-180, 0), 160, 72, OnDemolishPressed, 24);
+        UIHelper.CreateButton(_panel.transform, "種付け", new Vector2(0, 0), 160, 72, OnBreedPressed, 24);
+        UIHelper.CreateButton(_panel.transform, "搾乳", new Vector2(180, 0), 160, 72, OnMilkPressed, 24);
 
         _panel.SetActive(false);
     }

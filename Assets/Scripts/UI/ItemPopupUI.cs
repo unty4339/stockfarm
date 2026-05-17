@@ -18,7 +18,13 @@ public class ItemPopupUI : MonoBehaviour
 
     private void Awake()
     {
+        PopupCoordinator.OnAnyPopupShown += Hide;
         BuildPanel();
+    }
+
+    private void OnDestroy()
+    {
+        PopupCoordinator.OnAnyPopupShown -= Hide;
     }
 
     private void BuildPanel()
@@ -26,22 +32,23 @@ public class ItemPopupUI : MonoBehaviour
         _panel = new GameObject("ItemPopup");
         _panel.transform.SetParent(transform, false);
         var rt = _panel.AddComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0f, 0.5f);
-        rt.anchorMax = new Vector2(0f, 0.5f);
-        rt.sizeDelta = new Vector2(200, 175);
-        rt.anchoredPosition = new Vector2(110, 0);
+        rt.anchorMin = new Vector2(0f, 0f);
+        rt.anchorMax = new Vector2(0f, 0f);
+        rt.pivot = new Vector2(0f, 0f);
+        rt.sizeDelta = new Vector2(400, 350);
+        rt.anchoredPosition = new Vector2(10, 120);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
-        _nameText = UIHelper.CreateText(_panel.transform, "NameText", "", new Vector2(0, 68), 14, Color.white);
-        _stackText = UIHelper.CreateText(_panel.transform, "StackText", "", new Vector2(0, 42), 11, new Color(0.8f, 0.8f, 0.8f));
-        _qualityText = UIHelper.CreateText(_panel.transform, "QualityText", "", new Vector2(0, 20), 11, new Color(0.8f, 0.8f, 0.8f));
-        _sellFlagText = UIHelper.CreateText(_panel.transform, "SellFlagText", "", new Vector2(0, -5), 11, new Color(1f, 0.85f, 0.2f));
+        _nameText = UIHelper.CreateText(_panel.transform, "NameText", "", new Vector2(0, 136), 28, Color.white);
+        _stackText = UIHelper.CreateText(_panel.transform, "StackText", "", new Vector2(0, 84), 22, new Color(0.8f, 0.8f, 0.8f));
+        _qualityText = UIHelper.CreateText(_panel.transform, "QualityText", "", new Vector2(0, 40), 22, new Color(0.8f, 0.8f, 0.8f));
+        _sellFlagText = UIHelper.CreateText(_panel.transform, "SellFlagText", "", new Vector2(0, -10), 22, new Color(1f, 0.85f, 0.2f));
 
-        var sellBtn = UIHelper.CreateButton(_panel.transform, "売却する", new Vector2(0, -35), 90, 26, OnSellButtonClicked);
+        var sellBtn = UIHelper.CreateButton(_panel.transform, "売却する", new Vector2(0, -70), 180, 52, OnSellButtonClicked, 24);
         _sellButtonLabel = sellBtn.GetComponentInChildren<TextMeshProUGUI>();
 
-        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -68), 70, 24, Hide);
+        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -136), 140, 48, Hide, 24);
 
         _panel.SetActive(false);
     }
@@ -52,6 +59,7 @@ public class ItemPopupUI : MonoBehaviour
     /// <param name="tile">アイテムが置かれているタイル</param>
     public void Show(GridTile tile)
     {
+        PopupCoordinator.NotifyShown();
         _currentTile = tile;
         _panel?.SetActive(true);
         Refresh();

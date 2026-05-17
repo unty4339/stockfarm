@@ -35,7 +35,6 @@ public class MenuBarUI : MonoBehaviour
         ZoneMenuUI = gameObject.AddComponent<ZoneMenuUI>();
         gameObject.AddComponent<ZonePlacementModeUI>();
         gameObject.AddComponent<ZonePopupUI>();
-        gameObject.AddComponent<ItemPopupUI>();
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ public abstract class AITaskBase
 
     private List<Vector2Int> _path;
     private int _pathIndex;
+    private int _moveTickCounter;
 
     /// <summary>
     /// 新しい目標座標へ向けて移動を再開する（OnExecute内でフェーズ切替時に使用）
@@ -33,6 +34,7 @@ public abstract class AITaskBase
         var costProvider = new MapPathCostProvider();
         _path = PathFinder.FindPath(Owner.GridPosition, newTarget, costProvider);
         _pathIndex = 0;
+        _moveTickCounter = 0;
         State = _path.Count > 0 ? AITaskState.Moving : AITaskState.Interrupted;
     }
 
@@ -69,6 +71,7 @@ public abstract class AITaskBase
         var costProvider = new MapPathCostProvider();
         _path = PathFinder.FindPath(Owner.GridPosition, TargetPosition, costProvider);
         _pathIndex = 0;
+        _moveTickCounter = 0;
 
         State = _path.Count > 0 ? AITaskState.Moving : AITaskState.Interrupted;
     }
@@ -109,6 +112,10 @@ public abstract class AITaskBase
             State = AITaskState.Executing;
             return;
         }
+
+        _moveTickCounter++;
+        if (_moveTickCounter < Owner.MovementTicksPerCell) return;
+        _moveTickCounter = 0;
 
         Owner.GridPosition = _path[_pathIndex];
         _pathIndex++;

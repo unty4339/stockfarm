@@ -51,8 +51,8 @@ public class CropData
     /// <returns>最大成長tick数</returns>
     public static int GetMaxGrowthTick(CropType type) => type switch
     {
-        CropType.Wheat => 10,
-        _ => 10,
+        CropType.Wheat => 600,
+        _ => 600,
     };
 
     /// <summary>

@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// ゲーム内時間を管理する中枢シングルトンクラス
-/// 1日=600tick、1スロット=25tick、1tick=1秒（×1倍速）
+/// 1日=36000tick、1スロット=1500tick、1tick=1/60秒（×1倍速）
 /// </summary>
 public class GameTimeManager : MonoBehaviour
 {
@@ -23,7 +23,10 @@ public class GameTimeManager : MonoBehaviour
         }
     }
 
-    private const int TicksPerDay = 600;
+    /// <summary>リアル1秒あたりのtick数</summary>
+    public const int TicksPerSecond = 60;
+
+    private const int TicksPerDay = 36000;
     private const int SlotsPerDay = 24;
     private const int TicksPerSlot = TicksPerDay / SlotsPerDay;
 
@@ -80,7 +83,7 @@ public class GameTimeManager : MonoBehaviour
         if (IsPaused) return;
 
         _tickTimer += Time.deltaTime;
-        float tickInterval = 1f / TimeScale;
+        float tickInterval = 1f / (TimeScale * TicksPerSecond);
 
         while (_tickTimer >= tickInterval)
         {

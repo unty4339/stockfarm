@@ -6,11 +6,11 @@ using UnityEngine;
 /// </summary>
 public class CowWorker : WorkerBase
 {
-    private const float MilkAccumulationPerTick = 0.02f;
-    private const int PregnancyEarlyDuration = 3000;
-    private const int PregnancyLateDuration = 1200;
-    private const int EstrusCycleTicks = 1800;
-    private const int EstrusDuration = 300;
+    private const float MilkAccumulationPerTick = 0.02f / 60f;
+    private const int PregnancyEarlyDuration = 180000;
+    private const int PregnancyLateDuration = 72000;
+    private const int EstrusCycleTicks = 108000;
+    private const int EstrusDuration = 18000;
     private const float BaseBreedProbability = 0.5f;
 
     protected override Color WorkerColor => new Color(0.6f, 0.4f, 0.2f);

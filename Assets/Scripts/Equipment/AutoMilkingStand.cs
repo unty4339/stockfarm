@@ -16,7 +16,7 @@ public class AutoMilkingStand : ProcessingEquipmentBase
     public override int InputAmount => 0;
     public override ResourceType OutputType => ResourceType.Milk;
     public override int OutputAmount => 1;
-    public override int CycleTicks => 20;
+    public override int CycleTicks => 1200;
 
     /// <summary>搾乳待機中の牛</summary>
     public CowWorker OccupyingCow { get; private set; }

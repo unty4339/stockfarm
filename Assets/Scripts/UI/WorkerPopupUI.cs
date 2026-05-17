@@ -14,7 +14,13 @@ public class WorkerPopupUI : MonoBehaviour
 
     private void Awake()
     {
+        PopupCoordinator.OnAnyPopupShown += Hide;
         BuildPanel();
+    }
+
+    private void OnDestroy()
+    {
+        PopupCoordinator.OnAnyPopupShown -= Hide;
     }
 
     private void BuildPanel()
@@ -22,21 +28,22 @@ public class WorkerPopupUI : MonoBehaviour
         _panel = new GameObject("WorkerPopup");
         _panel.transform.SetParent(transform, false);
         var rt = _panel.AddComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0f, 0.5f);
-        rt.anchorMax = new Vector2(0f, 0.5f);
-        rt.sizeDelta = new Vector2(210, 185);
-        rt.anchoredPosition = new Vector2(115, 0);
+        rt.anchorMin = new Vector2(0f, 0f);
+        rt.anchorMax = new Vector2(0f, 0f);
+        rt.pivot = new Vector2(0f, 0f);
+        rt.sizeDelta = new Vector2(420, 370);
+        rt.anchoredPosition = new Vector2(10, 120);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
         _nameText = UIHelper.CreateText(_panel.transform, "NameText", "名前",
-            new Vector2(0, 68), 14, Color.white);
+            new Vector2(0, 136), 28, Color.white);
         _statusText = UIHelper.CreateText(_panel.transform, "StatusText", "",
-            new Vector2(0, 15), 10, new Color(0.8f, 0.8f, 0.8f));
-        (_statusText.transform as RectTransform).sizeDelta = new Vector2(190, 65);
+            new Vector2(0, 30), 20, new Color(0.8f, 0.8f, 0.8f));
+        (_statusText.transform as RectTransform).sizeDelta = new Vector2(380, 130);
 
-        UIHelper.CreateButton(_panel.transform, "優先度", new Vector2(0, -50), 70, 24, OnPriorityPressed);
-        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -75), 70, 24, Hide);
+        UIHelper.CreateButton(_panel.transform, "優先度", new Vector2(0, -100), 140, 48, OnPriorityPressed, 24);
+        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(0, -150), 140, 48, Hide, 24);
         _panel.SetActive(false);
     }
 
@@ -52,6 +59,7 @@ public class WorkerPopupUI : MonoBehaviour
     /// <param name="worker">表示するワーカー</param>
     public void Show(WorkerBase worker)
     {
+        PopupCoordinator.NotifyShown();
         _currentWorker = worker;
         _panel?.SetActive(true);
 

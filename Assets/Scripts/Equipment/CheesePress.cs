@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 圧搾プレス機。牛乳20単位→チーズ1個に加工する（150tick/サイクル）
+/// 圧搾プレス機。牛乳20単位→チーズ1個に加工する（9000tick/サイクル）
 /// </summary>
 public class CheesePress : ProcessingEquipmentBase
 {
@@ -16,7 +16,7 @@ public class CheesePress : ProcessingEquipmentBase
     public override int InputAmount => 20;
     public override ResourceType OutputType => ResourceType.Cheese;
     public override int OutputAmount => 1;
-    public override int CycleTicks => 150;
+    public override int CycleTicks => 9000;
 
     private void Awake()
     {

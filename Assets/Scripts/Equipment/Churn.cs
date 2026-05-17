@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 足踏み式攪拌機。牛乳10単位→バター1個に加工する（100tick/サイクル）
+/// 足踏み式攪拌機。牛乳10単位→バター1個に加工する（6000tick/サイクル）
 /// </summary>
 public class Churn : ProcessingEquipmentBase
 {
@@ -16,7 +16,7 @@ public class Churn : ProcessingEquipmentBase
     public override int InputAmount => 10;
     public override ResourceType OutputType => ResourceType.Butter;
     public override int OutputAmount => 1;
-    public override int CycleTicks => 100;
+    public override int CycleTicks => 6000;
 
     private void Awake()
     {

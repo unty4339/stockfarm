@@ -16,7 +16,7 @@ public class FacilityMenuUI : MonoBehaviour
         var rt = _panel.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0f, 0f);
         rt.anchorMax = new Vector2(1f, 0f);
-        rt.sizeDelta = new Vector2(0, 130);
+        rt.sizeDelta = new Vector2(0, 260);
         rt.anchoredPosition = UIHelper.SubMenuPanelAnchoredPosition;
         var img = _panel.AddComponent<UnityEngine.UI.Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
@@ -51,13 +51,13 @@ public class FacilityMenuUI : MonoBehaviour
             EquipmentType.SellPoint,
         };
 
-        float startX = -((types.Length - 1) * 0.5f) * 90f;
+        float startX = -((types.Length - 1) * 0.5f) * 180f;
         for (int i = 0; i < types.Length; i++)
         {
             var type = types[i];
-            float x = startX + i * 90f;
+            float x = startX + i * 180f;
             UIHelper.CreateButton(_panel.transform, EquipmentTypeToJP(type),
-                new Vector2(x, 0), 80, 36, () => OnFacilitySelected(type));
+                new Vector2(x, 0), 160, 72, () => OnFacilitySelected(type), 24);
         }
     }
 
