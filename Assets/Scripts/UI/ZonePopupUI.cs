@@ -35,7 +35,7 @@ public class ZonePopupUI : MonoBehaviour
         rt.anchorMax = new Vector2(0f, 0f);
         rt.pivot = new Vector2(0f, 0f);
         rt.sizeDelta = new Vector2(500, 280);
-        rt.anchoredPosition = new Vector2(10, 120);
+        rt.anchoredPosition = new Vector2(0, 100);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.75f);
 

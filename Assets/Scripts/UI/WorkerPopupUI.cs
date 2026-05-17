@@ -34,7 +34,7 @@ public class WorkerPopupUI : MonoBehaviour
         rt.anchorMax = new Vector2(0f, 0f);
         rt.pivot = new Vector2(0f, 0f);
         rt.sizeDelta = new Vector2(420, 410);
-        rt.anchoredPosition = new Vector2(10, 120);
+        rt.anchoredPosition = new Vector2(0, 100);
         var img = _panel.AddComponent<Image>();
         img.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
