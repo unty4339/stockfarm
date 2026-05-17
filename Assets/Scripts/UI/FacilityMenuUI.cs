@@ -52,8 +52,8 @@ public class FacilityMenuUI : MonoBehaviour
     private void BuildButtons()
     {
         EquipmentType[] types = {
-            EquipmentType.Floor, EquipmentType.Wall, EquipmentType.Fence, EquipmentType.Gate,
-            EquipmentType.FeedingTrough, EquipmentType.FoodShelf, EquipmentType.Chest,
+            EquipmentType.Wall, EquipmentType.Fence, EquipmentType.Gate,
+            EquipmentType.FeedingTrough,
             EquipmentType.StrawBed, EquipmentType.NormalBed,
             EquipmentType.LuxuryBed, EquipmentType.KingBed,
             EquipmentType.SellPoint,
@@ -100,9 +100,7 @@ public class FacilityMenuUI : MonoBehaviour
             EquipmentType.Wall => "壁",
             EquipmentType.Fence => "柵",
             EquipmentType.Gate => "ゲート",
-            EquipmentType.FeedingTrough => "給餌桶",
-            EquipmentType.FoodShelf => "食料棚",
-            EquipmentType.Chest => "チェスト",
+            EquipmentType.FeedingTrough => "食事机",
             EquipmentType.StrawBed => "藁ベッド",
             EquipmentType.NormalBed => "普通ベッド",
             EquipmentType.LuxuryBed => "贅沢ベッド",
