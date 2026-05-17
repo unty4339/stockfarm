@@ -48,6 +48,7 @@ public class GhostPlacer : MonoBehaviour
 
     /// <summary>
     /// 指定位置に設備を配置可能かを判定する
+    /// エリア内の設備がすべて同一かつ置き換え可能な組み合わせであれば許可する
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">グリッド座標</param>
@@ -58,13 +59,23 @@ public class GhostPlacer : MonoBehaviour
         if (MapManager.Instance == null) return false;
 
         var size = BuildingManager.GetEffectiveSize(type, rotation);
+        EquipmentBase existingInArea = null;
+
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
             {
                 var pos = position + new Vector2Int(x, y);
                 var tile = MapManager.Instance.GetTileOrNull(pos);
-                if (tile == null || tile.PlacedEquipment != null) return false;
+                if (tile == null) return false;
+
+                if (tile.PlacedEquipment != null)
+                {
+                    var eq = tile.PlacedEquipment;
+                    if (existingInArea != null && existingInArea != eq) return false;
+                    if (!BuildingManager.IsReplaceable(type, eq)) return false;
+                    existingInArea = eq;
+                }
             }
         }
         return true;

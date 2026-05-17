@@ -23,18 +23,19 @@ public class ZoneManager : MonoBehaviour
 
     /// <summary>
     /// 指定タイル群にゾーンを作成する
-    /// 既にゾーンが割り当てられているタイルはスキップする
+    /// 既にゾーンが割り当てられているタイルが1つでも含まれる場合はキャンセルしてnullを返す
     /// </summary>
     /// <param name="type">ゾーン種別</param>
     /// <param name="tiles">ゾーンを構成するタイル座標</param>
-    /// <returns>作成したゾーンデータ</returns>
+    /// <returns>作成したゾーンデータ、またはキャンセル時null</returns>
     public ZoneData CreateZone(ZoneType type, IEnumerable<Vector2Int> tiles)
     {
         var availableTiles = new List<Vector2Int>();
         foreach (var pos in tiles)
         {
-            if (!_tileToZone.ContainsKey(pos) && MapManager.Instance.IsValidPosition(pos))
-                availableTiles.Add(pos);
+            if (!MapManager.Instance.IsValidPosition(pos)) continue;
+            if (_tileToZone.ContainsKey(pos)) return null;
+            availableTiles.Add(pos);
         }
 
         if (availableTiles.Count == 0) return null;

@@ -113,13 +113,13 @@ public abstract class WorkerBase : MonoBehaviour
 
     private void UpdateStaminaLogic()
     {
-        bool isSleeping = CurrentTask is SleepTask;
+        bool isSleeping = CurrentTask is SleepTask or GroundSleepTask;
         if (isSleeping)
         {
             var mood = RoomManager.Instance?.GetMoodAt(GridPosition);
-            float bedCoeff = AssignedBed != null
-                ? AssignedBed.StaminaRecoveryMultiplier
-                : 1.0f;
+            float bedCoeff = CurrentTask is GroundSleepTask
+                ? GroundSleepTask.GroundRecoveryMultiplier
+                : AssignedBed != null ? AssignedBed.StaminaRecoveryMultiplier : 1.0f;
             float recovery = MoodCalculator.GetStaminaRecoveryRate(BaseStaminaRecovery, bedCoeff, mood?.RestMood ?? 0f);
             UpdateStamina(recovery);
         }

@@ -21,7 +21,6 @@ public class ZonePlacementModeUI : MonoBehaviour
     private Camera _mainCamera;
     private RectTransform _canvasRT;
 
-    private Vector2 _dragStartCanvas;
     private Vector2 _dragStartScreen;
     private bool _isDragging;
 
@@ -95,9 +94,8 @@ public class ZonePlacementModeUI : MonoBehaviour
         if (mouse.leftButton.wasPressedThisFrame && !UIHelper.IsPointerOverUI())
         {
             _dragStartScreen = screenPos;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvasRT, screenPos, null, out _dragStartCanvas);
-            _previewRectRT.anchoredPosition = _dragStartCanvas;
+            var snappedRect = GetSnappedCanvasRect(screenPos, screenPos);
+            _previewRectRT.anchoredPosition = snappedRect.min;
             _previewRectRT.sizeDelta = Vector2.zero;
             _isDragging = true;
             _previewRectRT.gameObject.SetActive(true);
@@ -105,12 +103,9 @@ public class ZonePlacementModeUI : MonoBehaviour
 
         if (_isDragging && mouse.leftButton.isPressed)
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvasRT, screenPos, null, out Vector2 current);
-            Vector2 min = Vector2.Min(_dragStartCanvas, current);
-            Vector2 max = Vector2.Max(_dragStartCanvas, current);
-            _previewRectRT.anchoredPosition = min;
-            _previewRectRT.sizeDelta = max - min;
+            var snappedRect = GetSnappedCanvasRect(_dragStartScreen, screenPos);
+            _previewRectRT.anchoredPosition = snappedRect.min;
+            _previewRectRT.sizeDelta = snappedRect.size;
         }
 
         if (_isDragging && mouse.leftButton.wasReleasedThisFrame)
@@ -142,6 +137,36 @@ public class ZonePlacementModeUI : MonoBehaviour
         _isDragging = false;
         _modeLabel.text = "";
         _previewRectRT.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// ドラッグ開始・終了のスクリーン座標からグリッドにスナップした矩形をキャンバス座標で返す
+    /// </summary>
+    private Rect GetSnappedCanvasRect(Vector2 screenStart, Vector2 screenEnd)
+    {
+        var worldStart = _mainCamera.ScreenToWorldPoint(new Vector3(screenStart.x, screenStart.y, 0f));
+        var worldEnd = _mainCamera.ScreenToWorldPoint(new Vector3(screenEnd.x, screenEnd.y, 0f));
+
+        var gridStart = GridHelper.WorldToGrid(worldStart);
+        var gridEnd = GridHelper.WorldToGrid(worldEnd);
+
+        int minX = Mathf.Min(gridStart.x, gridEnd.x);
+        int maxX = Mathf.Max(gridStart.x, gridEnd.x);
+        int minY = Mathf.Min(gridStart.y, gridEnd.y);
+        int maxY = Mathf.Max(gridStart.y, gridEnd.y);
+
+        // 選択タイル群のワールド空間上の端に合わせる（タイル1セルは [-0.5, +0.5]）
+        var screenRectMin = _mainCamera.WorldToScreenPoint(new Vector3(minX - 0.5f, minY - 0.5f, 0f));
+        var screenRectMax = _mainCamera.WorldToScreenPoint(new Vector3(maxX + 0.5f, maxY + 0.5f, 0f));
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvasRT, screenRectMin, null, out Vector2 canvasMin);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvasRT, screenRectMax, null, out Vector2 canvasMax);
+
+        var rectMin = Vector2.Min(canvasMin, canvasMax);
+        var rectMax = Vector2.Max(canvasMin, canvasMax);
+        return new Rect(rectMin, rectMax - rectMin);
     }
 
     private void ConfirmZone(Vector2 screenStart, Vector2 screenEnd)

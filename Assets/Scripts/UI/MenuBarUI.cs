@@ -107,10 +107,11 @@ public class MenuBarUI : MonoBehaviour
         var go = new GameObject("MenuBar");
         go.transform.SetParent(transform, false);
         var rt = go.AddComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0.5f, 0f);
-        rt.anchorMax = new Vector2(0.5f, 0f);
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.zero;
+        rt.pivot = Vector2.zero;
         rt.sizeDelta = new Vector2(1200, 100);
-        rt.anchoredPosition = new Vector2(0, 60);
+        rt.anchoredPosition = Vector2.zero;
         var img = go.AddComponent<Image>();
         img.color = new Color(0f, 0f, 0f, 0.7f);
         return go;

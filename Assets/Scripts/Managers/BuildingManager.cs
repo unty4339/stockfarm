@@ -40,6 +40,7 @@ public class BuildingManager : MonoBehaviour
     /// <summary>
     /// 指定設備を設置する
     /// EconomyManager.TrySpendFunds()で資金消費し、成功した場合のみ設置する
+    /// 配置エリアに置き換え可能な設備がある場合は先に撤去してから建設する
     /// </summary>
     /// <param name="type">設備種別</param>
     /// <param name="position">設置グリッド座標</param>
@@ -47,17 +48,57 @@ public class BuildingManager : MonoBehaviour
     /// <returns>設置成功でtrue</returns>
     public bool PlaceEquipment(EquipmentType type, Vector2Int position, int rotation = 0)
     {
+        var size = GetEffectiveSize(type, rotation);
+        EquipmentBase existing = null;
+
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                var pos = position + new Vector2Int(x, y);
+                var tile = MapManager.Instance?.GetTileOrNull(pos);
+                if (tile == null) return false;
+                if (tile.PlacedEquipment == null) continue;
+
+                var eq = tile.PlacedEquipment;
+                if (existing != null && existing != eq) return false;
+                if (!IsReplaceable(type, eq)) return false;
+                existing = eq;
+            }
+        }
+
         var prefab = CreateEquipmentObject(type);
         if (prefab == null) return false;
 
-        if (!EconomyManager.Instance.TrySpendFunds(prefab.BuildCost))
+        int refund = existing?.BuildCost / 2 ?? 0;
+        if (EconomyManager.Instance.CurrentFunds + refund < prefab.BuildCost)
         {
             Destroy(prefab.gameObject);
             return false;
         }
 
+        WorkerBase workerToTransfer = null;
+        if (existing != null)
+        {
+            if (existing is CowBed oldBed)
+            {
+                workerToTransfer = oldBed.AssignedWorker;
+                oldBed.Unassign();
+            }
+            _allEquipments.Remove(existing);
+            existing.Remove();
+        }
+
+        EconomyManager.Instance.TrySpendFunds(prefab.BuildCost);
         prefab.Place(position, rotation);
         _allEquipments.Add(prefab);
+
+        if (workerToTransfer != null && prefab is CowBed newBed)
+        {
+            newBed.Assign(workerToTransfer);
+            workerToTransfer.AssignedBed = newBed;
+        }
+
         return true;
     }
 
@@ -119,6 +160,28 @@ public class BuildingManager : MonoBehaviour
     {
         _allEquipments.RemoveAll(e => e == null);
         return new List<EquipmentBase>(_allEquipments);
+    }
+
+    /// <summary>
+    /// 新設備と既存設備の組み合わせが置き換え可能かを返す
+    /// 壁/柵→ゲート、ベッド→別種ベッド のみ許可する
+    /// </summary>
+    /// <param name="newType">新しく建設する設備種別</param>
+    /// <param name="existing">配置エリアにある既存設備</param>
+    /// <returns>置き換え可能な場合true</returns>
+    public static bool IsReplaceable(EquipmentType newType, EquipmentBase existing)
+    {
+        if (newType == EquipmentType.Gate && (existing is Wall || existing is Fence))
+            return true;
+        if (existing is CowBed && IsBedType(newType) && existing.Type != newType)
+            return true;
+        return false;
+    }
+
+    private static bool IsBedType(EquipmentType type)
+    {
+        return type is EquipmentType.StrawBed or EquipmentType.NormalBed
+            or EquipmentType.LuxuryBed or EquipmentType.KingBed;
     }
 
     /// <summary>

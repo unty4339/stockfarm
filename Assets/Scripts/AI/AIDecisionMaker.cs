@@ -110,7 +110,7 @@ public class AIDecisionMaker
             ScheduleSlotType.Sleep    => TryCreateSleepTask() ?? CreateIdleTask(),
             ScheduleSlotType.Joy      => TryCreateJoyTask() ?? CreateIdleTask(),
             ScheduleSlotType.Work     => TryCreateWorkTask() ?? CreateIdleTask(),
-            ScheduleSlotType.Breeding => TryCreateBreedingIdleTask() ?? CreateIdleTask(),
+            ScheduleSlotType.Breeding => TryCreateBreedingIdleTask() ?? TryCreateBreedingWaitTask() ?? CreateIdleTask(),
             _                         => CreateIdleTask(),
         };
     }
@@ -138,10 +138,13 @@ public class AIDecisionMaker
 
     private AITaskBase TryCreateSleepTask()
     {
-        var bed = Owner.AssignedBed;
-        if (bed == null) return null;
-        var task = new SleepTask(Owner, bed);
-        return task.CanExecute() ? task : null;
+        var bed = Owner.AssignedBed ?? TryClaimNearestBed();
+        if (bed != null)
+        {
+            var task = new SleepTask(Owner, bed);
+            if (task.CanExecute()) return task;
+        }
+        return new GroundSleepTask(Owner);
     }
 
     private AITaskBase TryCreateEatTask()
@@ -247,10 +250,43 @@ public class AIDecisionMaker
     private AITaskBase TryCreateBreedingIdleTask()
     {
         if (Owner is not FarmerWorker farmer) return null;
-        var bed = Owner.AssignedBed;
+        var bed = Owner.AssignedBed ?? TryClaimNearestBed();
         if (bed == null) return null;
         var task = new BreedingIdleTask(farmer, bed);
         return task.CanExecute() ? task : null;
+    }
+
+    private AITaskBase TryCreateBreedingWaitTask()
+    {
+        if (Owner is not FarmerWorker) return null;
+        return new BreedingWaitTask(Owner);
+    }
+
+    /// <summary>
+    /// 未割り当ての最寄りベッドを探し、自身に割り当てて返す。空きがなければnull
+    /// </summary>
+    private CowBed TryClaimNearestBed()
+    {
+        if (BuildingManager.Instance == null) return null;
+        CowBed nearest = null;
+        int minDist = int.MaxValue;
+        foreach (var eq in BuildingManager.Instance.GetAllEquipments())
+        {
+            if (eq is CowBed bed && bed.AssignedWorker == null)
+            {
+                int dist = Mathf.Abs(eq.GridPosition.x - Owner.GridPosition.x)
+                         + Mathf.Abs(eq.GridPosition.y - Owner.GridPosition.y);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    nearest = bed;
+                }
+            }
+        }
+        if (nearest == null) return null;
+        nearest.Assign(Owner);
+        Owner.AssignedBed = nearest;
+        return nearest;
     }
 
     private BreedingIdleTask FindAvailableBreedingIdleTask()
