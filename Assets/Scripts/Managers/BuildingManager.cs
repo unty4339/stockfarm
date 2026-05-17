@@ -185,6 +185,22 @@ public class BuildingManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 設備種別の建設コストを返す（ドラッグ一括配置時の事前コスト計算用）
+    /// </summary>
+    /// <param name="type">設備種別</param>
+    /// <returns>建設コスト</returns>
+    public static int GetBuildCost(EquipmentType type)
+    {
+        return type switch
+        {
+            EquipmentType.Wall => 10,
+            EquipmentType.Fence => 15,
+            EquipmentType.Gate => 20,
+            _ => 0,
+        };
+    }
+
+    /// <summary>
     /// 設備種別からGridサイズを返す（GhostPlacer用）
     /// </summary>
     /// <param name="type">設備種別</param>
