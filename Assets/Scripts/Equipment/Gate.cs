@@ -19,9 +19,9 @@ public class Gate : EquipmentBase
     /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
     public override void Place(Vector2Int position, int rotation = 0)
     {
-        base.Place(position, rotation);
         var tile = MapManager.Instance?.GetTileOrNull(position);
         if (tile != null) tile.Type = TileType.Gate;
+        base.Place(position, rotation);
     }
 
     /// <summary>

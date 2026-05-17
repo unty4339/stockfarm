@@ -19,8 +19,8 @@ public class Wall : EquipmentBase
     /// <param name="rotation">配置回転角度（0/90/180/270度）</param>
     public override void Place(Vector2Int position, int rotation = 0)
     {
-        base.Place(position, rotation);
         SetTileType(position, TileType.Wall);
+        base.Place(position, rotation);
     }
 
     /// <summary>
