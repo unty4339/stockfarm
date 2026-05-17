@@ -120,7 +120,14 @@ public abstract class AITaskBase
         if (_moveTickCounter < Owner.MovementTicksPerCell) return;
         _moveTickCounter = 0;
 
-        Owner.GridPosition = _path[_pathIndex];
+        var nextPos = _path[_pathIndex];
+        if (new MapPathCostProvider().GetCost(nextPos) == int.MaxValue)
+        {
+            RestartMovingTo(TargetPosition);
+            return;
+        }
+
+        Owner.GridPosition = nextPos;
         _pathIndex++;
 
         if (_pathIndex >= _path.Count)
