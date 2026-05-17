@@ -9,4 +9,6 @@ public enum ScheduleSlotType
     Joy,
     /// <summary>就寝スロット</summary>
     Sleep,
+    /// <summary>種付けスロット（牧場主専用）</summary>
+    Breeding,
 }

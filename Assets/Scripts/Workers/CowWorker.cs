@@ -34,6 +34,11 @@ public class CowWorker : WorkerBase
     /// <summary>妊娠経過tick数</summary>
     public int PregnancyProgress { get; private set; }
 
+    /// <summary>種付けを1回行うフラグ（種付け完了後に自動解除）</summary>
+    public bool WantsBreeding { get; set; }
+    /// <summary>種付けを繰り返し行うフラグ（妊娠・出産を経ても解除されない）</summary>
+    public bool WantsBreedingRepeat { get; set; }
+
     /// <summary>子牛誕生イベント（自分自身のWorkerBaseを渡す）</summary>
     public event Action<CowWorker> OnGiveBirth;
 

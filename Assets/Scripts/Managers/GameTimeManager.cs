@@ -39,7 +39,7 @@ public class GameTimeManager : MonoBehaviour
     public int CurrentDay { get; private set; }
     /// <summary>現在の時間スロット（0〜23）</summary>
     public int CurrentSlot { get; private set; }
-    /// <summary>時間倍率（1〜3）</summary>
+    /// <summary>時間倍率（1, 3, 5のいずれか）</summary>
     public float TimeScale { get; private set; } = 1f;
     /// <summary>一時停止フラグ</summary>
     public bool IsPaused { get; private set; }
@@ -112,12 +112,12 @@ public class GameTimeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 時間倍率を設定する（1〜3にclamp）
+    /// 時間倍率を設定する（1, 3, 5のいずれかにclamp）
     /// </summary>
     /// <param name="scale">倍率</param>
     public void SetTimeScale(float scale)
     {
-        TimeScale = Mathf.Clamp(scale, 1f, 3f);
+        TimeScale = Mathf.Clamp(scale, 1f, 5f);
     }
 
     /// <summary>

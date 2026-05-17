@@ -39,6 +39,11 @@ public class ZoneMenuUI : MonoBehaviour
         var mouse = Mouse.current;
         if (mouse == null) return;
         if (mouse.rightButton.wasPressedThisFrame)
+        {
+            Hide();
+            return;
+        }
+        if (mouse.leftButton.wasPressedThisFrame && !UIHelper.IsPointerOverUI())
             Hide();
     }
 
@@ -53,6 +58,8 @@ public class ZoneMenuUI : MonoBehaviour
         agriBtn.interactable = false;
     }
 
+    /// <summary>パネルが表示中かどうか</summary>
+    public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを表示する</summary>
     public void Show() => _panel?.SetActive(true);
     /// <summary>パネルを非表示にする</summary>

@@ -56,8 +56,8 @@ public class TimeDisplayUI : MonoBehaviour
 
         UIHelper.CreateButton(bg.transform, "||", new Vector2(-160, -44), 72, 40, OnPausePressed, 24);
         UIHelper.CreateButton(bg.transform, "×1", new Vector2(-80, -44), 72, 40, () => OnSpeedChanged(1f), 24);
-        UIHelper.CreateButton(bg.transform, "×2", new Vector2(0, -44), 72, 40, () => OnSpeedChanged(2f), 24);
-        UIHelper.CreateButton(bg.transform, "×3", new Vector2(80, -44), 72, 40, () => OnSpeedChanged(3f), 24);
+        UIHelper.CreateButton(bg.transform, "×3", new Vector2(0, -44), 72, 40, () => OnSpeedChanged(3f), 24);
+        UIHelper.CreateButton(bg.transform, "×5", new Vector2(80, -44), 72, 40, () => OnSpeedChanged(5f), 24);
     }
 
     private void OnTick(int tick)
@@ -88,7 +88,7 @@ public class TimeDisplayUI : MonoBehaviour
     {
         if (_timeText == null) return;
         int day = GameTimeManager.Instance?.CurrentDay + 1 ?? 1;
-        _timeText.text = $"Day {day} | {SlotToTime(currentSlot)} ×{timeScale:0.0}";
+        _timeText.text = $"Day {day} | {SlotToTime(currentSlot)} ×{(int)timeScale}";
     }
 
     /// <summary>
@@ -101,12 +101,15 @@ public class TimeDisplayUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 速度変更ボタン押下時の処理
+    /// 速度変更ボタン押下時の処理。停止中の場合は自動で停止を解除する
     /// </summary>
     /// <param name="scale">倍率</param>
     public void OnSpeedChanged(float scale)
     {
-        GameTimeManager.Instance?.SetTimeScale(scale);
+        if (GameTimeManager.Instance == null) return;
+        if (GameTimeManager.Instance.IsPaused)
+            GameTimeManager.Instance.SetPaused(false);
+        GameTimeManager.Instance.SetTimeScale(scale);
     }
 
     /// <summary>

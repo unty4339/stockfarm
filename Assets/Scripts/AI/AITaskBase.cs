@@ -78,6 +78,7 @@ public abstract class AITaskBase
 
     /// <summary>
     /// 毎tick呼ばれる更新処理（状態遷移を内部で行う）
+    /// Moving・Executing 中に CanExecute が false になった場合は即座に中断する
     /// </summary>
     public void Tick()
     {
@@ -87,9 +88,11 @@ public abstract class AITaskBase
                 Start();
                 break;
             case AITaskState.Moving:
+                if (!CanExecute()) { Interrupt(); return; }
                 TickMoving();
                 break;
             case AITaskState.Executing:
+                if (!CanExecute()) { Interrupt(); return; }
                 OnExecute();
                 if (IsComplete())
                     State = AITaskState.Completed;

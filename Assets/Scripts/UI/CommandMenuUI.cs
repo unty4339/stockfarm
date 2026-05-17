@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 指令メニュー。指定タスクをプレイヤーが強制指示するためのUI
@@ -31,10 +32,22 @@ public class CommandMenuUI : MonoBehaviour
         _panel.SetActive(false);
     }
 
+    /// <summary>パネルが表示中かどうか</summary>
+    public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを表示する</summary>
     public void Show() => _panel?.SetActive(true);
     /// <summary>パネルを非表示にする</summary>
     public void Hide() => _panel?.SetActive(false);
+
+    private void Update()
+    {
+        if (!_panel.activeSelf) return;
+        var mouse = Mouse.current;
+        if (mouse == null) return;
+        if ((mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)
+            && !UIHelper.IsPointerOverUI())
+            Hide();
+    }
 
     /// <summary>
     /// 解体指令ボタン押下時の処理

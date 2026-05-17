@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -75,8 +76,20 @@ public class PriorityMenuUI : MonoBehaviour
         _panel.SetActive(true);
     }
 
+    /// <summary>パネルが表示中かどうか</summary>
+    public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを非表示にする</summary>
     public void Hide() => _panel?.SetActive(false);
+
+    private void Update()
+    {
+        if (!_panel.activeSelf) return;
+        var mouse = Mouse.current;
+        if (mouse == null) return;
+        if ((mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)
+            && !UIHelper.IsPointerOverUI())
+            Hide();
+    }
 
     /// <summary>
     /// 指定ワーカーを起点にテーブルを表示する（互換用）

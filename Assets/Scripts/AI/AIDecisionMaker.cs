@@ -86,16 +86,32 @@ public class AIDecisionMaker
             if (sleep != null) return sleep;
         }
 
+        // 種付けフラグがある牛：牧場主が種付けアイドル待機中なら即向かう
+        if (Owner is CowWorker breedCow
+            && (breedCow.WantsBreeding || breedCow.WantsBreedingRepeat)
+            && !breedCow.HasEffect(StatusEffectType.PregnancyEarly)
+            && !breedCow.HasEffect(StatusEffectType.PregnancyLate))
+        {
+            var idleTask = FindAvailableBreedingIdleTask();
+            if (idleTask != null)
+            {
+                var breedTask = new BreedingTask(breedCow, idleTask);
+                if (breedTask.CanExecute()) return breedTask;
+                breedTask.Interrupt();
+            }
+        }
+
         // スケジュールに従ったタスク
         int slot = GameTimeManager.Instance?.CurrentSlot ?? 8;
         ScheduleSlotType scheduleType = Owner.GetScheduleAt(slot);
 
         return scheduleType switch
         {
-            ScheduleSlotType.Sleep => TryCreateSleepTask() ?? CreateIdleTask(),
-            ScheduleSlotType.Joy => TryCreateJoyTask() ?? CreateIdleTask(),
-            ScheduleSlotType.Work => TryCreateWorkTask() ?? CreateIdleTask(),
-            _ => CreateIdleTask(),
+            ScheduleSlotType.Sleep    => TryCreateSleepTask() ?? CreateIdleTask(),
+            ScheduleSlotType.Joy      => TryCreateJoyTask() ?? CreateIdleTask(),
+            ScheduleSlotType.Work     => TryCreateWorkTask() ?? CreateIdleTask(),
+            ScheduleSlotType.Breeding => TryCreateBreedingIdleTask() ?? CreateIdleTask(),
+            _                         => CreateIdleTask(),
         };
     }
 
@@ -226,6 +242,27 @@ public class AIDecisionMaker
     private AITaskBase CreateIdleTask()
     {
         return new IdleWalkTask(Owner);
+    }
+
+    private AITaskBase TryCreateBreedingIdleTask()
+    {
+        if (Owner is not FarmerWorker farmer) return null;
+        var bed = Owner.AssignedBed;
+        if (bed == null) return null;
+        var task = new BreedingIdleTask(farmer, bed);
+        return task.CanExecute() ? task : null;
+    }
+
+    private BreedingIdleTask FindAvailableBreedingIdleTask()
+    {
+        foreach (var worker in UnityEngine.Object.FindObjectsByType<FarmerWorker>(FindObjectsSortMode.None))
+        {
+            if (worker.CurrentTask is BreedingIdleTask idleTask
+                && idleTask.State == AITaskState.Executing
+                && idleTask.HasCapacity)
+                return idleTask;
+        }
+        return null;
     }
 
     private T FindNearest<T>() where T : EquipmentBase

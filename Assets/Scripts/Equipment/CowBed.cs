@@ -12,6 +12,9 @@ public abstract class CowBed : EquipmentBase
     /// <summary>睡眠時のスタミナ回復倍率（例: 0.9 = 90%）</summary>
     public abstract float StaminaRecoveryMultiplier { get; }
 
+    /// <summary>同時に種付けできる牛の上限数（デフォルト1、サブクラスでオーバーライド可能）</summary>
+    public virtual int BreedingCapacity => 1;
+
     /// <summary>割り当て済みワーカー（nullなら空き）</summary>
     public WorkerBase AssignedWorker { get; private set; }
 
