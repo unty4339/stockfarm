@@ -132,6 +132,7 @@ public class BuildingManager : MonoBehaviour
         {
             EquipmentType.AutoMilkingStand => new Vector2Int(2, 2),
             EquipmentType.BreedingFacility => new Vector2Int(2, 2),
+            EquipmentType.DeliveryBox => new Vector2Int(2, 2),
             EquipmentType.CheesePress => new Vector2Int(2, 1),
             EquipmentType.SellPoint => new Vector2Int(2, 1),
             EquipmentType.StrawBed or EquipmentType.NormalBed => new Vector2Int(1, 2),
@@ -189,6 +190,7 @@ public class BuildingManager : MonoBehaviour
             EquipmentType.LuxuryBed => go.AddComponent<LuxuryBed>(),
             EquipmentType.KingBed => go.AddComponent<KingBed>(),
             EquipmentType.SellPoint => go.AddComponent<SellPoint>(),
+            EquipmentType.DeliveryBox => go.AddComponent<DeliveryBox>(),
             _ => null,
         };
     }

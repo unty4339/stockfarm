@@ -37,6 +37,7 @@ public class StorageManager : MonoBehaviour
             {
                 var tile = tiles[x, y];
                 if (tile.PlacedItem == null) continue;
+                if (tile.PlacedItem.SellFlag) continue;
                 if (tile.Zone?.Type == ZoneType.Storage) continue;
                 if (_pickupReserved.Contains(tile.Position)) continue;
 
@@ -123,6 +124,7 @@ public class StorageManager : MonoBehaviour
                 var tile = tiles[x, y];
                 if (tile.PlacedItem == null) continue;
                 if (tile.PlacedItem.Type != type) continue;
+                if (tile.PlacedItem.SellFlag) continue;
                 if (_pickupReserved.Contains(tile.Position)) continue;
 
                 var zone = tile.Zone;
@@ -145,6 +147,43 @@ public class StorageManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 指定座標から最も近い、売却フラグ付きアイテムが置かれたタイルを返す
+    /// 納品ボックスの占有タイルに置かれているアイテムは対象外
+    /// </summary>
+    /// <param name="from">探索の基準座標</param>
+    /// <returns>最も近い対象タイル、見つからなければnull</returns>
+    public GridTile FindNearestSellFlaggedTile(Vector2Int from)
+    {
+        if (MapManager.Instance == null) return null;
+
+        GridTile nearest = null;
+        int minDist = int.MaxValue;
+        var tiles = MapManager.Instance.Tiles;
+        int w = MapManager.Instance.Width;
+        int h = MapManager.Instance.Height;
+
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                var tile = tiles[x, y];
+                if (tile.PlacedItem?.SellFlag != true) continue;
+                if (tile.PlacedEquipment is DeliveryBox) continue;
+                if (_pickupReserved.Contains(tile.Position)) continue;
+
+                int dist = Mathf.Abs(x - from.x) + Mathf.Abs(y - from.y);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    nearest = tile;
+                }
+            }
+        }
+
+        return nearest;
     }
 
     /// <summary>

@@ -24,6 +24,9 @@ public class TileItem
     /// <summary>スタックが上限に達しているか</summary>
     public bool IsStackFull => IsStackable && StackCount >= StackLimit;
 
+    /// <summary>売却フラグ（trueのとき納品ボックスへの運搬対象になる）</summary>
+    public bool SellFlag { get; set; }
+
     /// <summary>
     /// 品質あり（非スタック）アイテム用コンストラクタ
     /// </summary>

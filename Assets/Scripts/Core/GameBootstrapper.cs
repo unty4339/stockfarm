@@ -54,7 +54,7 @@ public class GameBootstrapper : MonoBehaviour
     }
 
     /// <summary>
-    /// 初期設備（給餌桶×2、チェスト×2、ベッド×2）をコスト無しで配置する
+    /// 初期設備（給餌桶×2、チェスト×2、ベッド×2、納品ボックス×1）をコスト無しで配置する
     /// </summary>
     private void PlaceInitialEquipments()
     {
@@ -64,6 +64,7 @@ public class GameBootstrapper : MonoBehaviour
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.Chest, new Vector2Int(7, 7));
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.NormalBed, new Vector2Int(10, 5));
         BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.NormalBed, new Vector2Int(10, 7));
+        BuildingManager.Instance.PlaceEquipmentFree(EquipmentType.DeliveryBox, new Vector2Int(28, 14));
 
         RoomManager.Instance.RefreshRooms();
     }

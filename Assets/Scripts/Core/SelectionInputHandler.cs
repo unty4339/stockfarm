@@ -18,6 +18,7 @@ public class SelectionInputHandler : MonoBehaviour
     private WorkerPopupUI _workerPopupUI;
     private FacilityPopupUI _facilityPopupUI;
     private ZonePopupUI _zonePopupUI;
+    private ItemPopupUI _itemPopupUI;
     private WorkerSelectionUI _workerSelectionUI;
     private Camera _mainCamera;
 
@@ -32,6 +33,7 @@ public class SelectionInputHandler : MonoBehaviour
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
         _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
         _zonePopupUI = FindFirstObjectByType<ZonePopupUI>();
+        _itemPopupUI = FindFirstObjectByType<ItemPopupUI>();
         _workerSelectionUI = FindFirstObjectByType<WorkerSelectionUI>();
         _mainCamera = Camera.main;
     }
@@ -127,18 +129,31 @@ public class SelectionInputHandler : MonoBehaviour
         {
             _facilityPopupUI?.Show(equipment);
             _zonePopupUI?.Hide();
+            _itemPopupUI?.Hide();
             return;
         }
 
         var gridPos = GridHelper.WorldToGrid(worldPos);
         if (MapManager.Instance != null && MapManager.Instance.IsValidPosition(gridPos))
         {
-            var zone = MapManager.Instance.GetTile(gridPos).Zone;
-            if (zone != null)
+            var tile = MapManager.Instance.GetTile(gridPos);
+
+            if (tile.PlacedItem != null)
             {
-                _zonePopupUI?.Show(zone);
+                _itemPopupUI?.Show(tile);
                 _workerPopupUI?.Hide();
                 _facilityPopupUI?.Hide();
+                _zonePopupUI?.Hide();
+                _workerSelectionUI?.HideIconBar();
+                return;
+            }
+
+            if (tile.Zone != null)
+            {
+                _zonePopupUI?.Show(tile.Zone);
+                _workerPopupUI?.Hide();
+                _facilityPopupUI?.Hide();
+                _itemPopupUI?.Hide();
                 _workerSelectionUI?.HideIconBar();
                 return;
             }
@@ -147,6 +162,7 @@ public class SelectionInputHandler : MonoBehaviour
         _workerPopupUI?.Hide();
         _facilityPopupUI?.Hide();
         _zonePopupUI?.Hide();
+        _itemPopupUI?.Hide();
         _workerSelectionUI?.HideIconBar();
     }
 

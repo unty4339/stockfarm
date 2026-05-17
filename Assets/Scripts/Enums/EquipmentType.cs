@@ -48,4 +48,6 @@ public enum EquipmentType
     KingBed,
     /// <summary>資源置き場（売却ポイント）</summary>
     SellPoint,
+    /// <summary>納品ボックス（売却フラグ付きアイテムの集積地点）</summary>
+    DeliveryBox,
 }

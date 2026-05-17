@@ -29,6 +29,7 @@ public class AIDecisionMaker
         TaskPriorities[typeof(BirthTask)] = 1;
         TaskPriorities[typeof(SleepTask)] = 2;
         TaskPriorities[typeof(EatTask)] = 3;
+        TaskPriorities[typeof(SellDeliveryTask)] = 3;
         TaskPriorities[typeof(MilkWaitTask)] = 4;
         TaskPriorities[typeof(CareTask)] = 5;
         TaskPriorities[typeof(ProcessingAssistTask)] = 5;
@@ -164,6 +165,14 @@ public class AIDecisionMaker
     {
         if (Owner is FarmerWorker)
         {
+            var sellTile = StorageManager.Instance?.FindNearestSellFlaggedTile(Owner.GridPosition);
+            if (sellTile != null && StorageManager.Instance.TryReservePickup(sellTile.Position))
+            {
+                var sell = new SellDeliveryTask(Owner, sellTile);
+                if (sell.CanExecute()) return sell;
+                StorageManager.Instance.ReleasePickup(sellTile.Position);
+            }
+
             var pickupTile = StorageManager.Instance?.FindNearestPickupTile(Owner.GridPosition);
             if (pickupTile != null && StorageManager.Instance.TryReservePickup(pickupTile.Position))
             {
