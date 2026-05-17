@@ -17,7 +17,7 @@ public class MenuBarUI : MonoBehaviour
     /// <summary>ゾーン設定メニューの参照</summary>
     public ZoneMenuUI ZoneMenuUI { get; private set; }
 
-    private void Start()
+    private void Awake()
     {
         BuildMenuBar();
     }

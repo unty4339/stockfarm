@@ -4,9 +4,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// マウスの左クリック・ドラッグ入力を監視し、ワーカー・施設の選択を制御する入力ハンドラ
-/// ワーカーが優先され、範囲内にワーカーがいない場合のみ施設を対象にする
-/// BuildModeUI がアクティブな間はすべての処理をスキップする
+/// マウスの左クリック・ドラッグ入力を監視し、ワーカー・施設の選択を制御する入力ハンドラ。
+/// ワーカーが優先され、範囲内にワーカーがいない場合のみ施設を対象にする。
+/// BuildModeUI / ZonePlacementModeUI / DemolishModeUI がアクティブな間はすべての処理をスキップする。
+/// FacilityMenuUI が開いている状態で開始したドラッグは矩形・選択処理を抑制する
 /// </summary>
 public class SelectionInputHandler : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class SelectionInputHandler : MonoBehaviour
     private BuildModeUI _buildModeUI;
     private ZonePlacementModeUI _zonePlacementModeUI;
     private DemolishModeUI _demolishModeUI;
+    private FacilityMenuUI _facilityMenuUI;
     private WorkerPopupUI _workerPopupUI;
     private FacilityPopupUI _facilityPopupUI;
     private ZonePopupUI _zonePopupUI;
@@ -26,12 +28,15 @@ public class SelectionInputHandler : MonoBehaviour
     private Vector2 _mouseDownPos;
     private bool _mouseDownActive;
     private bool _dragStarted;
+    /// <summary>ドラッグ開始時点で施設メニューが開いていたため矩形・選択処理を抑制するフラグ</summary>
+    private bool _suppressDragRect;
 
     private void Start()
     {
         _buildModeUI = FindFirstObjectByType<BuildModeUI>();
         _zonePlacementModeUI = FindFirstObjectByType<ZonePlacementModeUI>();
         _demolishModeUI = FindFirstObjectByType<DemolishModeUI>();
+        _facilityMenuUI = FindFirstObjectByType<FacilityMenuUI>();
         _workerPopupUI = FindFirstObjectByType<WorkerPopupUI>();
         _facilityPopupUI = FindFirstObjectByType<FacilityPopupUI>();
         _zonePopupUI = FindFirstObjectByType<ZonePopupUI>();
@@ -45,9 +50,9 @@ public class SelectionInputHandler : MonoBehaviour
         var mouse = Mouse.current;
         if (mouse == null) return;
 
-        if (_buildModeUI != null && _buildModeUI.IsInBuildMode) return;
-        if (_zonePlacementModeUI != null && _zonePlacementModeUI.IsInZonePlacementMode) return;
-        if (_demolishModeUI != null && _demolishModeUI.IsInDemolishMode) return;
+        if (_buildModeUI != null && _buildModeUI.IsInBuildMode) { AbortDrag(); return; }
+        if (_zonePlacementModeUI != null && _zonePlacementModeUI.IsInZonePlacementMode) { AbortDrag(); return; }
+        if (_demolishModeUI != null && _demolishModeUI.IsInDemolishMode) { AbortDrag(); return; }
 
         if (mouse.leftButton.wasPressedThisFrame)
             OnMouseDown(mouse.position.ReadValue());
@@ -60,7 +65,17 @@ public class SelectionInputHandler : MonoBehaviour
             OnMouseUp(mouse.position.ReadValue());
             _mouseDownActive = false;
             _dragStarted = false;
+            _suppressDragRect = false;
         }
+    }
+
+    private void AbortDrag()
+    {
+        if (_dragStarted)
+            _workerSelectionUI?.EndRect();
+        _dragStarted = false;
+        _mouseDownActive = false;
+        _suppressDragRect = false;
     }
 
     private void OnMouseDown(Vector2 screenPos)
@@ -70,6 +85,8 @@ public class SelectionInputHandler : MonoBehaviour
         _mouseDownPos = screenPos;
         _mouseDownActive = true;
         _dragStarted = false;
+        // 施設メニューが開いているときに開始したドラッグは矩形・選択を抑制する
+        _suppressDragRect = _facilityMenuUI != null && _facilityMenuUI.IsVisible;
     }
 
     private void OnMouseDrag(Vector2 screenPos)
@@ -79,10 +96,12 @@ public class SelectionInputHandler : MonoBehaviour
         if (!_dragStarted)
         {
             _dragStarted = true;
-            _workerSelectionUI?.BeginRect(_mouseDownPos);
+            if (!_suppressDragRect)
+                _workerSelectionUI?.BeginRect(_mouseDownPos);
         }
 
-        _workerSelectionUI?.UpdateRect(screenPos);
+        if (!_suppressDragRect)
+            _workerSelectionUI?.UpdateRect(screenPos);
     }
 
     private void OnMouseUp(Vector2 screenPos)
@@ -94,6 +113,9 @@ public class SelectionInputHandler : MonoBehaviour
         }
 
         _workerSelectionUI?.EndRect();
+
+        if (_suppressDragRect) return;
+
         var workers = GetWorkersInRect(_mouseDownPos, screenPos);
 
         if (workers.Count == 1)
