@@ -3,7 +3,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// ゾーン種別の選択サブメニュー。ゾーン設定ボタンから開かれる
+/// ゾーン種別の選択メニュー要素。ゾーン設定ボタンから開かれる。
+/// ボタンを押すとゾーン配置モードに入り、メニュー要素が非表示になるとモードも解除される
 /// </summary>
 public class ZoneMenuUI : MonoBehaviour
 {
@@ -34,7 +35,9 @@ public class ZoneMenuUI : MonoBehaviour
     private void Update()
     {
         if (!_panel.activeSelf) return;
-        if (_placementModeUI != null && _placementModeUI.IsInZonePlacementMode) return;
+
+        // モードがアクティブな間はモード側が入力を処理するためスキップする
+        if (_placementModeUI != null && _placementModeUI.IsActive) return;
 
         var mouse = Mouse.current;
         if (mouse == null) return;
@@ -62,8 +65,15 @@ public class ZoneMenuUI : MonoBehaviour
     public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを表示する</summary>
     public void Show() => _panel?.SetActive(true);
-    /// <summary>パネルを非表示にする</summary>
-    public void Hide() => _panel?.SetActive(false);
+
+    /// <summary>
+    /// パネルを非表示にする。このメニュー要素から設定されたモードも解除する
+    /// </summary>
+    public void Hide()
+    {
+        _placementModeUI?.Exit();
+        _panel?.SetActive(false);
+    }
 
     /// <summary>
     /// 指定ゾーン種別の配置モードを開始する
@@ -71,6 +81,6 @@ public class ZoneMenuUI : MonoBehaviour
     /// <param name="type">選択されたゾーン種別</param>
     private void OnZoneTypeSelected(ZoneType type)
     {
-        _placementModeUI?.EnterZonePlacementMode(type);
+        _placementModeUI?.Enter(type);
     }
 }

@@ -2,12 +2,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 施設配置モードへの入口となるメニュー。設備種別のボタン一覧を表示する
+/// 施設設置モードへの入口となるメニュー要素。設備種別のボタン一覧を表示する。
+/// ボタンを押すと施設設置モードに入り、メニュー要素が非表示になるとモードも解除される
 /// </summary>
 public class FacilityMenuUI : MonoBehaviour
 {
     private GameObject _panel;
-    private BuildModeUI _buildModeUI;
+    private FacilityPlacementModeUI _placementModeUI;
 
     private void Awake()
     {
@@ -27,13 +28,15 @@ public class FacilityMenuUI : MonoBehaviour
 
     private void Start()
     {
-        _buildModeUI = FindFirstObjectByType<BuildModeUI>();
+        _placementModeUI = FindFirstObjectByType<FacilityPlacementModeUI>();
     }
 
     private void Update()
     {
         if (!_panel.activeSelf) return;
-        if (_buildModeUI != null && _buildModeUI.IsInBuildMode) return;
+
+        // モードがアクティブな間はモード側が入力を処理するためスキップする
+        if (_placementModeUI != null && _placementModeUI.IsActive) return;
 
         var mouse = Mouse.current;
         if (mouse == null) return;
@@ -70,16 +73,23 @@ public class FacilityMenuUI : MonoBehaviour
     public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを表示する</summary>
     public void Show() => _panel?.SetActive(true);
-    /// <summary>パネルを非表示にする</summary>
-    public void Hide() => _panel?.SetActive(false);
 
     /// <summary>
-    /// 指定設備の配置モードを開始する。メニューはそのまま表示し続ける
+    /// パネルを非表示にする。このメニュー要素から設定されたモードも解除する
+    /// </summary>
+    public void Hide()
+    {
+        _placementModeUI?.Exit();
+        _panel?.SetActive(false);
+    }
+
+    /// <summary>
+    /// 指定設備の施設設置モードを開始する
     /// </summary>
     /// <param name="type">選択された設備種別</param>
     public void OnFacilitySelected(EquipmentType type)
     {
-        _buildModeUI?.EnterBuildMode(type);
+        _placementModeUI?.Enter(type);
     }
 
     private static string EquipmentTypeToJP(EquipmentType type)

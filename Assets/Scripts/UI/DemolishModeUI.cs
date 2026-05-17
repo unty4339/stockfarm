@@ -7,14 +7,14 @@ using UnityEngine.UI;
 /// <summary>
 /// 解体モード中の入力・プレビュー描画を管理するUI。
 /// クリックで単体売却、ドラッグでグリッド矩形範囲内の設備を一括売却する。
-/// SelectionInputHandler はこのフラグを確認して入力をスキップする
+/// ModeCoordinator にアクティブ状態を登録し、SelectionInputHandler はこれを介して入力をスキップする
 /// </summary>
-public class DemolishModeUI : MonoBehaviour
+public class DemolishModeUI : MonoBehaviour, IModeUI
 {
     private const float DragThreshold = 5f;
 
     /// <summary>解体モード中かどうか</summary>
-    public bool IsInDemolishMode { get; private set; }
+    public bool IsActive { get; private set; }
 
     private TextMeshProUGUI _modeLabel;
     private RectTransform _previewRectRT;
@@ -71,7 +71,7 @@ public class DemolishModeUI : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInDemolishMode) return;
+        if (!IsActive) return;
 
         var mouse = Mouse.current;
         if (mouse == null) return;
@@ -79,13 +79,13 @@ public class DemolishModeUI : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
         {
-            ExitDemolishMode();
+            Exit();
             return;
         }
 
         if (mouse.rightButton.wasPressedThisFrame)
         {
-            ExitDemolishMode();
+            Exit();
             return;
         }
 
@@ -134,9 +134,10 @@ public class DemolishModeUI : MonoBehaviour
     /// <summary>
     /// 解体モードを開始する
     /// </summary>
-    public void EnterDemolishMode()
+    public void Enter()
     {
-        IsInDemolishMode = true;
+        ModeCoordinator.Enter(this);
+        IsActive = true;
         _isMouseDown = false;
         _isDragging = false;
         _modeLabel.text = "解体モード  クリック: 単体売却 / ドラッグ: 範囲売却  [ESC]でキャンセル";
@@ -145,9 +146,11 @@ public class DemolishModeUI : MonoBehaviour
     /// <summary>
     /// 解体モードを終了する
     /// </summary>
-    public void ExitDemolishMode()
+    public void Exit()
     {
-        IsInDemolishMode = false;
+        if (!IsActive) return;
+        IsActive = false;
+        ModeCoordinator.Exit(this);
         _isMouseDown = false;
         _isDragging = false;
         _modeLabel.text = "";

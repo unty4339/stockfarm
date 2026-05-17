@@ -122,7 +122,7 @@ public static class SceneSetup
         EnsureChildComponent<ItemPopupUI>(canvas.transform, "ItemPopupUI");
         EnsureChildComponent<WorkerPopupUI>(canvas.transform, "WorkerPopupUI");
         EnsureChildComponent<ZonePopupUI>(canvas.transform, "ZonePopupUI");
-        EnsureChildComponent<BuildModeUI>(canvas.transform, "BuildModeUI");
+        EnsureChildComponent<FacilityPlacementModeUI>(canvas.transform, "FacilityPlacementModeUI");
         EnsureChildComponent<WorkerSelectionUI>(canvas.transform, "WorkerSelectionUI");
 
         EditorUtility.SetDirty(canvas.gameObject);

@@ -2,15 +2,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 指令メニュー。指定タスクをプレイヤーが強制指示するためのUI
+/// 指令メニュー要素。指定タスクをプレイヤーが強制指示するためのUI。
+/// ボタンを押すとモードに入り、メニュー要素が非表示になるとモードも解除される
 /// </summary>
 public class CommandMenuUI : MonoBehaviour
 {
     private GameObject _panel;
+    private DemolishModeUI _demolishModeUI;
 
     private void Awake()
     {
         BuildPanel();
+    }
+
+    private void Start()
+    {
+        _demolishModeUI = FindFirstObjectByType<DemolishModeUI>();
     }
 
     private void BuildPanel()
@@ -36,12 +43,23 @@ public class CommandMenuUI : MonoBehaviour
     public bool IsVisible => _panel != null && _panel.activeSelf;
     /// <summary>パネルを表示する</summary>
     public void Show() => _panel?.SetActive(true);
-    /// <summary>パネルを非表示にする</summary>
-    public void Hide() => _panel?.SetActive(false);
+
+    /// <summary>
+    /// パネルを非表示にする。このメニュー要素から設定されたモードも解除する
+    /// </summary>
+    public void Hide()
+    {
+        _demolishModeUI?.Exit();
+        _panel?.SetActive(false);
+    }
 
     private void Update()
     {
         if (!_panel.activeSelf) return;
+
+        // モードがアクティブな間はモード側が入力を処理するためスキップする
+        if (_demolishModeUI != null && _demolishModeUI.IsActive) return;
+
         var mouse = Mouse.current;
         if (mouse == null) return;
         if ((mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)
@@ -50,16 +68,15 @@ public class CommandMenuUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 解体指令ボタン押下時の処理
+    /// 解体ボタン押下時の処理。解体モードに入る
     /// </summary>
     public void OnDemolishPressed()
     {
-        Hide();
-        FindFirstObjectByType<DemolishModeUI>()?.EnterDemolishMode();
+        _demolishModeUI?.Enter();
     }
 
     /// <summary>
-    /// 種付け指令ボタン押下時の処理
+    /// 種付けボタン押下時の処理
     /// </summary>
     public void OnBreedPressed()
     {
@@ -67,7 +84,7 @@ public class CommandMenuUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 搾乳指令ボタン押下時の処理
+    /// 搾乳ボタン押下時の処理
     /// </summary>
     public void OnMilkPressed()
     {

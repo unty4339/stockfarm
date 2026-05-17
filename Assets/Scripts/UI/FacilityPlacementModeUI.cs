@@ -4,14 +4,14 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// 施設配置モード中のUI。GhostPlacerと連携して配置プレビューを管理する
+/// 施設設置モード中のUI。GhostPlacerと連携して配置プレビューを管理する
 /// </summary>
-public class BuildModeUI : MonoBehaviour
+public class FacilityPlacementModeUI : MonoBehaviour, IModeUI
 {
     /// <summary>ゴースト表示コンポーネントの参照</summary>
     public GhostPlacer GhostPlacer { get; private set; }
-    /// <summary>配置モード中かどうか</summary>
-    public bool IsInBuildMode { get; private set; }
+    /// <summary>施設設置モード中かどうか</summary>
+    public bool IsActive { get; private set; }
     /// <summary>配置中の設備種別</summary>
     public EquipmentType CurrentType { get; private set; }
     /// <summary>現在の配置回転角度（0/90/180/270度）</summary>
@@ -33,7 +33,7 @@ public class BuildModeUI : MonoBehaviour
 
     private void BuildOverlay()
     {
-        var go = new GameObject("BuildModeLabel");
+        var go = new GameObject("FacilityPlacementModeLabel");
         go.transform.SetParent(transform, false);
         var rt = go.AddComponent<RectTransform>();
         rt.anchorMin = new Vector2(0.5f, 1f);
@@ -50,14 +50,14 @@ public class BuildModeUI : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInBuildMode) return;
+        if (!IsActive) return;
 
         var mouse = Mouse.current;
         if (mouse == null) return;
 
         if (mouse.rightButton.wasPressedThisFrame)
         {
-            ExitBuildMode();
+            Exit();
             return;
         }
 
@@ -71,7 +71,7 @@ public class BuildModeUI : MonoBehaviour
             }
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
-                ExitBuildMode();
+                Exit();
                 return;
             }
         }
@@ -87,23 +87,26 @@ public class BuildModeUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定設備の配置モードを開始する
+    /// 指定設備の施設設置モードを開始する
     /// </summary>
     /// <param name="type">設備種別</param>
-    public void EnterBuildMode(EquipmentType type)
+    public void Enter(EquipmentType type)
     {
-        IsInBuildMode = true;
+        ModeCoordinator.Enter(this);
+        IsActive = true;
         CurrentType = type;
         CurrentRotation = 0;
         UpdateModeLabel();
     }
 
     /// <summary>
-    /// 配置モードを終了する
+    /// 施設設置モードを終了する
     /// </summary>
-    public void ExitBuildMode()
+    public void Exit()
     {
-        IsInBuildMode = false;
+        if (!IsActive) return;
+        IsActive = false;
+        ModeCoordinator.Exit(this);
         GhostPlacer.HideGhost();
         _modeLabel.text = "";
     }

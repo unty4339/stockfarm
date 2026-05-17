@@ -6,13 +6,12 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 矩形ドラッグでゾーンを配置するモードのUI。
-/// BuildModeUI と同様のガードフラグ IsInZonePlacementMode を持ち、
-/// SelectionInputHandler がこのフラグを確認して入力をスキップする
+/// ModeCoordinator にアクティブ状態を登録し、SelectionInputHandler はこれを介して入力をスキップする
 /// </summary>
-public class ZonePlacementModeUI : MonoBehaviour
+public class ZonePlacementModeUI : MonoBehaviour, IModeUI
 {
     /// <summary>ゾーン配置モード中かどうか</summary>
-    public bool IsInZonePlacementMode { get; private set; }
+    public bool IsActive { get; private set; }
     /// <summary>配置中のゾーン種別</summary>
     public ZoneType SelectedZoneType { get; private set; }
 
@@ -71,7 +70,7 @@ public class ZonePlacementModeUI : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInZonePlacementMode) return;
+        if (!IsActive) return;
 
         var mouse = Mouse.current;
         if (mouse == null) return;
@@ -79,13 +78,13 @@ public class ZonePlacementModeUI : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
         {
-            ExitZonePlacementMode();
+            Exit();
             return;
         }
 
         if (mouse.rightButton.wasPressedThisFrame)
         {
-            ExitZonePlacementMode();
+            Exit();
             return;
         }
 
@@ -120,9 +119,10 @@ public class ZonePlacementModeUI : MonoBehaviour
     /// 指定ゾーン種別でゾーン配置モードを開始する
     /// </summary>
     /// <param name="type">ゾーン種別</param>
-    public void EnterZonePlacementMode(ZoneType type)
+    public void Enter(ZoneType type)
     {
-        IsInZonePlacementMode = true;
+        ModeCoordinator.Enter(this);
+        IsActive = true;
         SelectedZoneType = type;
         _isDragging = false;
         _modeLabel.text = $"{ZoneTypeToJP(type)}配置中  ドラッグで範囲を指定  [ESC]でキャンセル";
@@ -131,9 +131,11 @@ public class ZonePlacementModeUI : MonoBehaviour
     /// <summary>
     /// ゾーン配置モードを終了する
     /// </summary>
-    public void ExitZonePlacementMode()
+    public void Exit()
     {
-        IsInZonePlacementMode = false;
+        if (!IsActive) return;
+        IsActive = false;
+        ModeCoordinator.Exit(this);
         _isDragging = false;
         _modeLabel.text = "";
         _previewRectRT.gameObject.SetActive(false);
