@@ -8,17 +8,18 @@ using UnityEngine.UI;
 public class WorkerPopupUI : MonoBehaviour
 {
     private static readonly Color BlueAccent = new Color(0.22f, 0.47f, 0.90f);
-    private static readonly Color DarkLabel = new Color(0.15f, 0.15f, 0.15f);
+    private static readonly Color WhiteLabel = new Color(0.9f, 0.9f, 0.9f);
     private static readonly Color BarFillColor = new Color(0.22f, 0.47f, 0.90f);
-    private static readonly Color BarBgColor = new Color(0.85f, 0.85f, 0.85f);
+    private static readonly Color BarBgColor = new Color(0.3f, 0.3f, 0.3f);
     private const string BlueHex = "#3878E6";
 
-    private const float PanelW = 230f;
-    private const float PanelH = 360f;
+    private const float PanelW = 400f;
+    private const float PanelH = 520f;
     private const float Pad = 12f;
     private const float ContentW = PanelW - Pad * 2f;
-    private const float LabelW = 38f;
+    private const float LabelW = 60f;
     private const float BarW = ContentW - LabelW - 4f;
+    private const float BarH = 26f;
 
     private GameObject _panel;
     private TextMeshProUGUI _nameText;
@@ -61,35 +62,29 @@ public class WorkerPopupUI : MonoBehaviour
         panelRt.pivot = Vector2.zero;
         panelRt.sizeDelta = new Vector2(PanelW, PanelH);
         panelRt.anchoredPosition = new Vector2(0f, 100f);
-        _panel.AddComponent<Image>().color = new Color(0.98f, 0.98f, 0.98f, 0.97f);
-        var outline = _panel.AddComponent<Outline>();
-        outline.effectColor = BlueAccent;
-        outline.effectDistance = new Vector2(2f, 2f);
+        _panel.AddComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
 
-        _nameText = MakePanelText("NameText", 154f, ContentW, 28f, 22f, BlueAccent);
+        _nameText = MakePanelText("NameText", 221f, ContentW, 54f, 44f, BlueAccent);
 
-        _ageRow = MakeRow("AgeRow", 123f, 22f);
-        MakeLeftText(_ageRow.transform, "AgeLabel", "年齢", 0f, LabelW, 15f, DarkLabel);
-        _ageValue = MakeLeftText(_ageRow.transform, "AgeValue", "0", LabelW + 4f, 50f, 15f, BlueAccent);
+        _ageRow = MakeRow("AgeRow", 166f, 40f);
+        MakeLeftText(_ageRow.transform, "AgeLabel", "年齢", 0f, LabelW, 30f, WhiteLabel);
+        _ageValue = MakeLeftText(_ageRow.transform, "AgeValue", "0", LabelW + 6f, 80f, 30f, BlueAccent);
 
-        _cowStatsRow = MakeRow("CowStatsRow", 95f, 22f);
-        _cowStatsText = MakeLeftText(_cowStatsRow.transform, "CowStats", "", 0f, ContentW, 14f, DarkLabel);
+        _cowStatsRow = MakeRow("CowStatsRow", 119f, 38f);
+        _cowStatsText = MakeLeftText(_cowStatsRow.transform, "CowStats", "", 0f, ContentW, 28f, WhiteLabel);
 
-        _hungerFill = MakeBarRow("HungerBar", 69f, "食事");
-        _staminaFill = MakeBarRow("StaminaBar", 47f, "睡眠");
-        _happinessFill = MakeBarRow("HappinessBar", 25f, "幸福");
+        _hungerFill = MakeBarRow("HungerBar", 74f, "食事");
+        _staminaFill = MakeBarRow("StaminaBar", 34f, "睡眠");
+        _happinessFill = MakeBarRow("HappinessBar", -6f, "幸福");
 
-        _milkBarRow = MakeRow("MilkBarRow", -1f, 22f);
+        _milkBarRow = MakeRow("MilkBarRow", -50f, 36f);
         _milkFill = MakeBarInRow(_milkBarRow.transform, "乳量");
 
-        BuildBadgesRow(-31f);
+        BuildBadgesRow(-102f);
 
-        _actionText = MakePanelText("ActionText", -61f, ContentW, 22f, 14f, BlueAccent);
+        _actionText = MakePanelText("ActionText", -155f, ContentW, 38f, 28f, BlueAccent);
 
-        _breedingRow = BuildBreedingRow(-95f);
-
-        UIHelper.CreateButton(_panel.transform, "優先度", new Vector2(-52f, -134f), 95f, 34f, OnPriorityPressed, 18);
-        UIHelper.CreateButton(_panel.transform, "閉じる", new Vector2(52f, -134f), 95f, 34f, Hide, 18);
+        _breedingRow = BuildBreedingRow(-206f);
 
         _panel.SetActive(false);
     }
@@ -137,7 +132,7 @@ public class WorkerPopupUI : MonoBehaviour
         rt.anchorMin = new Vector2(0f, 0.5f);
         rt.anchorMax = new Vector2(0f, 0.5f);
         rt.pivot = new Vector2(0f, 0.5f);
-        rt.sizeDelta = new Vector2(width, 22f);
+        rt.sizeDelta = new Vector2(width, 40f);
         rt.anchoredPosition = new Vector2(xOffset, 0f);
         var tmp = go.AddComponent<TextMeshProUGUI>();
         UIHelper.ApplyFont(tmp);
@@ -150,8 +145,8 @@ public class WorkerPopupUI : MonoBehaviour
 
     private Image MakeBarRow(string name, float y, string labelStr)
     {
-        var row = MakeRow(name, y, 22f);
-        MakeLeftText(row.transform, "Label", labelStr, 0f, LabelW, 13f, DarkLabel);
+        var row = MakeRow(name, y, 36f);
+        MakeLeftText(row.transform, "Label", labelStr, 0f, LabelW, 26f, WhiteLabel);
 
         var bgGo = new GameObject("Bg");
         bgGo.transform.SetParent(row.transform, false);
@@ -159,7 +154,7 @@ public class WorkerPopupUI : MonoBehaviour
         bgRt.anchorMin = new Vector2(0f, 0.5f);
         bgRt.anchorMax = new Vector2(0f, 0.5f);
         bgRt.pivot = new Vector2(0f, 0.5f);
-        bgRt.sizeDelta = new Vector2(BarW, 14f);
+        bgRt.sizeDelta = new Vector2(BarW, BarH);
         bgRt.anchoredPosition = new Vector2(LabelW + 4f, 0f);
         bgGo.AddComponent<Image>().color = BarBgColor;
 
@@ -168,7 +163,7 @@ public class WorkerPopupUI : MonoBehaviour
 
     private Image MakeBarInRow(Transform row, string labelStr)
     {
-        MakeLeftText(row, "Label", labelStr, 0f, LabelW, 13f, DarkLabel);
+        MakeLeftText(row, "Label", labelStr, 0f, LabelW, 26f, WhiteLabel);
 
         var bgGo = new GameObject("Bg");
         bgGo.transform.SetParent(row, false);
@@ -176,7 +171,7 @@ public class WorkerPopupUI : MonoBehaviour
         bgRt.anchorMin = new Vector2(0f, 0.5f);
         bgRt.anchorMax = new Vector2(0f, 0.5f);
         bgRt.pivot = new Vector2(0f, 0.5f);
-        bgRt.sizeDelta = new Vector2(BarW, 14f);
+        bgRt.sizeDelta = new Vector2(BarW, BarH);
         bgRt.anchoredPosition = new Vector2(LabelW + 4f, 0f);
         bgGo.AddComponent<Image>().color = BarBgColor;
 
@@ -200,9 +195,9 @@ public class WorkerPopupUI : MonoBehaviour
 
     private void BuildBadgesRow(float y)
     {
-        var row = MakeRow("BadgesRow", y, 26f);
+        var row = MakeRow("BadgesRow", y, 52f);
         var hlg = row.AddComponent<HorizontalLayoutGroup>();
-        hlg.spacing = 5f;
+        hlg.spacing = 8f;
         hlg.childAlignment = TextAnchor.MiddleLeft;
         hlg.childControlWidth = false;
         hlg.childControlHeight = false;
@@ -221,10 +216,10 @@ public class WorkerPopupUI : MonoBehaviour
         var go = new GameObject(label + "Badge");
         go.transform.SetParent(parent, false);
         var rt = go.AddComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(42f, 24f);
-        go.AddComponent<Image>().color = new Color(0.92f, 0.92f, 0.92f);
+        rt.sizeDelta = new Vector2(72f, 46f);
+        go.AddComponent<Image>().color = new Color(0.22f, 0.22f, 0.22f);
         var ol = go.AddComponent<Outline>();
-        ol.effectColor = new Color(0.6f, 0.6f, 0.6f);
+        ol.effectColor = new Color(0.5f, 0.5f, 0.5f);
         ol.effectDistance = new Vector2(1.5f, 1.5f);
 
         var textGo = new GameObject("Label");
@@ -237,17 +232,17 @@ public class WorkerPopupUI : MonoBehaviour
         var tmp = textGo.AddComponent<TextMeshProUGUI>();
         UIHelper.ApplyFont(tmp);
         tmp.text = label;
-        tmp.fontSize = 12f;
-        tmp.color = DarkLabel;
+        tmp.fontSize = 24f;
+        tmp.color = Color.white;
         tmp.alignment = TextAlignmentOptions.Center;
         return go;
     }
 
     private GameObject BuildBreedingRow(float y)
     {
-        var row = MakeRow("BreedingRow", y, 30f);
-        MakeLeftText(row.transform, "BreedingLabel", "種付け", 0f, 50f, 14f, DarkLabel);
-        var btn = UIHelper.CreateButton(row.transform, "なし", new Vector2(6f, 0f), 110f, 28f, OnBreedingButtonPressed, 14);
+        var row = MakeRow("BreedingRow", y, 48f);
+        MakeLeftText(row.transform, "BreedingLabel", "種付け", 0f, 88f, 28f, WhiteLabel);
+        var btn = UIHelper.CreateButton(row.transform, "なし", new Vector2(10f, 0f), 180f, 44f, OnBreedingButtonPressed, 26);
         _breedingBtnLabel = btn.transform.Find("Label").GetComponent<TextMeshProUGUI>();
         return row;
     }
@@ -356,12 +351,5 @@ public class WorkerPopupUI : MonoBehaviour
         if (cow.WantsBreedingRepeat) return "予約（繰り返し）";
         if (cow.WantsBreeding) return "予約";
         return "なし";
-    }
-
-    private void OnPriorityPressed()
-    {
-        var priorityUI = FindFirstObjectByType<PriorityMenuUI>();
-        if (_currentWorker != null)
-            priorityUI?.RefreshList(_currentWorker);
     }
 }

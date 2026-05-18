@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -21,6 +22,8 @@ public abstract class ProcessingEquipmentBase : EquipmentBase
     public bool IsProcessing { get; private set; }
     /// <summary>加工補助中のワーカー（nullなら補助なし）</summary>
     public WorkerBase AssistantWorker { get; private set; }
+    /// <summary>現在サイクルの進捗（0〜1）。加工中でない場合は0</summary>
+    public float CycleProgress => IsProcessing ? Mathf.Clamp01((float)_currentTick / CycleTicks) : 0f;
     /// <summary>入力用タンク（液体リソース使用設備のみ）</summary>
     public LiquidTank InputTank { get; protected set; }
     /// <summary>出力用タンク（液体リソース使用設備のみ）</summary>
@@ -78,6 +81,14 @@ public abstract class ProcessingEquipmentBase : EquipmentBase
             GameTimeManager.Instance.OnTickAdvanced -= OnTick;
 
         OnCycleCompleted?.Invoke();
+    }
+
+    /// <inheritdoc/>
+    public override IReadOnlyList<WorkerBase> GetActiveWorkers()
+    {
+        if (AssistantWorker != null)
+            return new WorkerBase[] { AssistantWorker };
+        return base.GetActiveWorkers();
     }
 
     private void OnDestroy()

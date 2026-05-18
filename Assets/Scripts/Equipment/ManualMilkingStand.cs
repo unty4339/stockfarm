@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -45,5 +46,14 @@ public class ManualMilkingStand : ProcessingEquipmentBase
     public void ReleaseCow()
     {
         OccupyingCow = null;
+    }
+
+    /// <inheritdoc/>
+    public override IReadOnlyList<WorkerBase> GetActiveWorkers()
+    {
+        var list = new List<WorkerBase>();
+        if (OccupyingCow != null) list.Add(OccupyingCow);
+        list.AddRange(base.GetActiveWorkers());
+        return list;
     }
 }

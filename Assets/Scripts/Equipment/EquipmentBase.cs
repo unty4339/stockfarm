@@ -109,4 +109,10 @@ public abstract class EquipmentBase : MonoBehaviour
         return positions;
     }
 
+    /// <summary>
+    /// この設備に現在割り当てられているワーカーのリストを返す
+    /// </summary>
+    /// <returns>アクティブなワーカーのリスト</returns>
+    public virtual IReadOnlyList<WorkerBase> GetActiveWorkers() => Array.Empty<WorkerBase>();
+
 }

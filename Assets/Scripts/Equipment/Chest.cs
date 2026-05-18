@@ -15,6 +15,8 @@ public class Chest : EquipmentBase, IContainer
 
     /// <summary>最大保管数</summary>
     public int Capacity { get; private set; } = 20;
+    /// <summary>現在の合計保管数</summary>
+    public int TotalStored => Capacity - GetRemainingCapacity();
     /// <summary>フィルター設定（nullなら全種受け入れ）</summary>
     public ResourceType? FilterType { get; set; }
     /// <summary>自動運搬タスク生成時の優先度（1〜7）</summary>
