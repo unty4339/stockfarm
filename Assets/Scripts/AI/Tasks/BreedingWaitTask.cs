@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 種付けスケジュール中にベッドが空くのを待つタスク。空きが出た時点で完了し、
 /// AIDecisionMaker が BreedingIdleTask へ切り替えるのを促す
 /// </summary>
@@ -38,4 +38,7 @@ public class BreedingWaitTask : AITaskBase
         }
         return false;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "種付けを待っています";
 }

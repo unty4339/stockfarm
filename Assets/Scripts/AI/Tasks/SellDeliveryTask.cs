@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 売却フラグが立ったアイテムを拾い、納品ボックスへ運搬するタスク
@@ -101,4 +101,7 @@ public class SellDeliveryTask : AITaskBase
     {
         return _phase == Phase.Delivering && _carrying == null;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "販売品を運搬中";
 }

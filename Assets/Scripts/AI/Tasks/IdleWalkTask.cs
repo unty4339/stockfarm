@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// アイドル散歩タスク。やることがない時にランダムな近隣タイルを歩く
@@ -50,4 +50,7 @@ public class IdleWalkTask : AITaskBase
         }
         return current;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "散歩中";
 }

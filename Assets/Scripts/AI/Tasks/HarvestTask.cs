@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 収穫タスク。収穫待ちの作物があるタイルへ移動して収穫し、アイテムをドロップする
 /// </summary>
 public class HarvestTask : AITaskBase
@@ -56,4 +56,7 @@ public class HarvestTask : AITaskBase
         CropManager.Instance?.ReleaseHarvesting(_tile.Position);
         base.Interrupt();
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "収穫中";
 }

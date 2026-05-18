@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 牧場主の種付けアイドルタスク。割り当てベッドへ移動し、種付けスケジュール中かつ
@@ -51,4 +51,7 @@ public class BreedingIdleTask : AITaskBase
     /// 種付け終了時に牛をカウントから除外する
     /// </summary>
     public void UnregisterCow() => _activeCowCount = Mathf.Max(0, _activeCowCount - 1);
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "種付けに向かっています";
 }

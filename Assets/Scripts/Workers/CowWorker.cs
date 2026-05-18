@@ -7,6 +7,9 @@ using UnityEngine;
 public class CowWorker : WorkerBase
 {
     private const float MilkAccumulationPerTick = 0.02f / 60f;
+    /// <summary>乳量の上限値</summary>
+    public const float MaxMilkAccumulation = 100f;
+    private const float MilkingDeduction = 80f;
     private const int PregnancyEarlyDuration = 180000;
     private const int PregnancyLateDuration = 72000;
     private const int EstrusCycleTicks = 108000;
@@ -110,7 +113,7 @@ public class CowWorker : WorkerBase
         if (!HasEffect(StatusEffectType.Lactating)) return;
 
         float efficiency = GetWorkEfficiency(workMood);
-        MilkAccumulation += MilkAccumulationPerTick * efficiency * BaseWork;
+        MilkAccumulation = Mathf.Min(MaxMilkAccumulation, MilkAccumulation + MilkAccumulationPerTick * efficiency * BaseWork);
     }
 
     /// <summary>
@@ -122,7 +125,7 @@ public class CowWorker : WorkerBase
     {
         int amount = Mathf.Max(1, Mathf.FloorToInt(MilkAccumulation));
         float quality = GetMilkQuality();
-        MilkAccumulation = 0f;
+        MilkAccumulation = Mathf.Max(0f, MilkAccumulation - MilkingDeduction);
         return new LiquidResource(amount, quality);
     }
 

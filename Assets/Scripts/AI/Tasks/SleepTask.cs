@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 睡眠タスク。割り当て済みのベッドに向かい、スタミナを回復する
@@ -44,4 +44,7 @@ public class SleepTask : AITaskBase
         return Owner.Stamina >= 99f ||
                Owner.GetScheduleAt(GameTimeManager.Instance?.CurrentSlot ?? 0) != ScheduleSlotType.Sleep;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "睡眠中";
 }

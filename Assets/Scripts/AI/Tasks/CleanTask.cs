@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 清掃タスク。廃棄物マーカーのあるタイルへ移動して除去する
 /// </summary>
 public class CleanTask : AITaskBase
@@ -32,4 +32,7 @@ public class CleanTask : AITaskBase
 
     /// <inheritdoc/>
     protected override bool IsComplete() => _target.IsGone;
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "清掃中";
 }

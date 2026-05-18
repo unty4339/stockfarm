@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 運搬タスク。2フェーズ（取出→納品）を内部状態で管理する
@@ -68,4 +68,7 @@ public class TransportTask : AITaskBase
     {
         return _phase == TransportPhase.Delivering && _carrying == null;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "運搬中";
 }

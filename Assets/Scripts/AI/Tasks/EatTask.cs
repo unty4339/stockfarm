@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 摂食タスク。給餌桶または食料棚へ移動して食料を消費する
@@ -52,4 +52,7 @@ public class EatTask : AITaskBase
     {
         return !Owner.HasEffect(StatusEffectType.Hungry) || Owner.Hunger <= 30f;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "食事中";
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -219,4 +219,7 @@ public class PickUpTask : AITaskBase
     {
         return _phase == Phase.Delivering && _carrying == null;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "アイテムを回収中";
 }

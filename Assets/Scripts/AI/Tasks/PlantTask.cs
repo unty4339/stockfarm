@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 植付けタスク。農業ゾーンの空きタイルへ移動して作物を植え付ける
 /// </summary>
 public class PlantTask : AITaskBase
@@ -51,4 +51,7 @@ public class PlantTask : AITaskBase
         CropManager.Instance?.ReleasePlanting(_tile.Position);
         base.Interrupt();
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "植え付け中";
 }

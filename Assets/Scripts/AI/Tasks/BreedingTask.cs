@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 牛の種付けタスク。牧場主がアイドル中のベッドへ移動し、種付けを行う
 /// 完了後に妊娠状態になる。「種付け（繰り返し）」でない場合はフラグも解除する
 /// </summary>
@@ -64,4 +64,7 @@ public class BreedingTask : AITaskBase
             _registered = false;
         }
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "種付け中";
 }

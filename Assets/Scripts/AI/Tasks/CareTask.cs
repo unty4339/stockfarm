@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// ケア利用タスク。自動ブラシ機を使用して幸福度を向上させる
 /// </summary>
 public class CareTask : AITaskBase
@@ -39,4 +39,7 @@ public class CareTask : AITaskBase
 
     /// <inheritdoc/>
     protected override bool IsComplete() => _done;
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "手入れを受けています";
 }

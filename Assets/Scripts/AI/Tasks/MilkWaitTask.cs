@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 搾乳待機タスク。搾乳スタンドへ移動し、搾乳操作を待機する
 /// </summary>
 public class MilkWaitTask : AITaskBase
@@ -46,4 +46,7 @@ public class MilkWaitTask : AITaskBase
 
     /// <inheritdoc/>
     protected override bool IsComplete() => _milked;
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "搾乳を待っています";
 }

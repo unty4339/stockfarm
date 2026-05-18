@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 地面で睡眠するタスク。ベッドが見つからない場合に現在地で休息する。
 /// ベッドより回復効率が低い
 /// </summary>
@@ -32,4 +32,7 @@ public class GroundSleepTask : AITaskBase
         return Owner.Stamina >= 99f ||
                Owner.GetScheduleAt(GameTimeManager.Instance?.CurrentSlot ?? 0) != ScheduleSlotType.Sleep;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "地面で休んでいます";
 }

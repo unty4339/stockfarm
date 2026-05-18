@@ -45,6 +45,12 @@ public abstract class AITaskBase
     public abstract bool CanExecute();
 
     /// <summary>
+    /// ポップアップに表示する現在の行動テキストを返す
+    /// </summary>
+    /// <returns>行動を示す日本語テキスト</returns>
+    public virtual string GetActionText() => "待機中";
+
+    /// <summary>
     /// タスク固有の実行ロジック（Executing状態のtickごとに呼ばれる）
     /// </summary>
     protected abstract void OnExecute();

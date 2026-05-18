@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 加工補助タスク。加工設備に補助要員として参加する
 /// </summary>
 public class ProcessingAssistTask : AITaskBase
@@ -40,4 +40,7 @@ public class ProcessingAssistTask : AITaskBase
     {
         return _started && !_equipment.IsProcessing;
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "加工補助中";
 }

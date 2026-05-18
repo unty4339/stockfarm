@@ -1,4 +1,4 @@
-/// <summary>
+﻿/// <summary>
 /// 出産タスク。最優先（Priority=1）で発動し、スケジュールを無視する
 /// </summary>
 public class BirthTask : AITaskBase
@@ -34,4 +34,7 @@ public class BirthTask : AITaskBase
     {
         return !_cow.HasEffect(StatusEffectType.PregnancyLate);
     }
+
+    /// <inheritdoc/>
+    public override string GetActionText() => "出産中";
 }
