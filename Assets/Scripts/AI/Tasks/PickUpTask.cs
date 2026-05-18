@@ -36,10 +36,11 @@ public class PickUpTask : AITaskBase
         // PickingUp フェーズを過ぎていれば搬送中なので、ソースタイルの状態に関わらず続行する
         if (_phase != Phase.PickingUp) return true;
 
-        return _sourceTile.PlacedItem != null &&
-               _sourceTile.Zone?.Type != ZoneType.Storage &&
-               StorageManager.Instance != null &&
-               StorageManager.Instance.FindNearestStorageDestination(Owner.GridPosition).HasValue;
+        if (_sourceTile.PlacedItem == null || _sourceTile.Zone?.Type == ZoneType.Storage) return false;
+        if (StorageManager.Instance == null) return false;
+
+        // アイテム種別を渡すことで、収納可能な空き（または同種スタック未満のタイル）がある場合のみ受理する
+        return StorageManager.Instance.FindNearestStorageDestination(Owner.GridPosition, _sourceTile.PlacedItem.Type).HasValue;
     }
 
     /// <inheritdoc/>
@@ -87,8 +88,15 @@ public class PickUpTask : AITaskBase
 
     private void ExecutePickingUp()
     {
-        var destResult = StorageManager.Instance?.FindNearestStorageDestination(Owner.GridPosition);
-        if (destResult == null || _sourceTile.PlacedItem == null)
+        if (_sourceTile.PlacedItem == null)
+        {
+            StorageManager.Instance?.ReleasePickup(_sourceTile.Position);
+            Interrupt();
+            return;
+        }
+
+        var destResult = StorageManager.Instance?.FindNearestStorageDestination(Owner.GridPosition, _sourceTile.PlacedItem.Type);
+        if (destResult == null)
         {
             StorageManager.Instance?.ReleasePickup(_sourceTile.Position);
             Interrupt();

@@ -70,7 +70,7 @@ public abstract class EquipmentBase : MonoBehaviour
     }
 
     /// <summary>
-    /// 設置を解除し、BuildCostの50%をEconomyManagerに返還する
+    /// 設置を解除し、BuildCostの100%をEconomyManagerに返還する
     /// </summary>
     public virtual void Remove()
     {
@@ -85,7 +85,7 @@ public abstract class EquipmentBase : MonoBehaviour
             }
         }
 
-        EconomyManager.Instance?.AddFunds(BuildCost / 2);
+        EconomyManager.Instance?.AddFunds(BuildCost);
         IsPlaced = false;
         RoomManager.Instance?.RefreshRooms();
         Destroy(gameObject);

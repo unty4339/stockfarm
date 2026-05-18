@@ -70,7 +70,7 @@ public class BuildingManager : MonoBehaviour
         var prefab = CreateEquipmentObject(type);
         if (prefab == null) return false;
 
-        int refund = existing?.BuildCost / 2 ?? 0;
+        int refund = existing?.BuildCost ?? 0;
         if (EconomyManager.Instance.CurrentFunds + refund < prefab.BuildCost)
         {
             Destroy(prefab.gameObject);
